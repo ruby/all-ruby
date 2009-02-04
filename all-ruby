@@ -1,0 +1,129 @@
+#!/usr/bin/env ruby
+
+def parse_name(n)
+  return nil if /\Aruby-(([\d.]+)(p\d+|head|dev)?)(-pth)?\z/ !~ n
+  ver = $2
+  pth = $4 ? 1 : 0
+  case $1
+  when /\A1\.8\z/
+    plvl = 5000
+  when /head\z/
+    plvl = 4999
+  when /dev\z/
+    plvl = -1
+  when /p(\d+)\z/
+    plvl = $1.to_i
+  else
+    plvl = 0
+  end
+  ver = ver.split(/\./).map {|d| d.to_i }
+  ver << 9999 if ver.length == 2
+  [ver, plvl, pth]
+end
+
+def collect_commands
+  commands = []
+  ENV['PATH'].split(/:/).each {|d|
+    next if %r{\A/} !~ d
+    begin
+      Dir.foreach(d) {|n|
+        next if !parse_name(n)
+        next if commands.include? n
+        bin = "#{d}/#{n}"
+        if File.file?(bin) && File.executable?(bin)
+          commands << n
+        end
+      }
+    rescue Errno::ENOENT
+      next
+    end
+  }
+  commands
+end
+
+def sort_by_name(commands)
+  commands.sort_by {|n|
+    parse_name(n)
+  }
+end
+
+def verify_version(n)
+  name_ver, name_plvl, name_pth = parse_name(n)
+  version_code = <<'End'
+print "ver=", RUBY_VERSION, "\n"
+print "date=", RUBY_RELEASE_DATE, "\n"
+print "plvl=", defined?(RUBY_PATCHLEVEL) ? RUBY_PATCHLEVEL : "nil", "\n"
+print "rev=", defined?(RUBY_REVISION) ? RUBY_REVISION : "nil", "\n"
+End
+  out = IO.popen("#{n} -e '#{version_code}'") {|f| f.read }
+  return nil if !$?.success?
+  return nil if /ver=(.*)/ !~ out
+  ver = $1
+  return nil if /date=(.*)/ !~ out
+  date = $1
+  return nil if /plvl=(.*)/ !~ out
+  plvl = $1 == 'nil' ? nil : $1.to_i
+  return nil if /rev=(.*)/ !~ out
+  rev = $1 == 'nil' ? nil : $1.to_i
+  if (plvl == 0 || plvl == -1 || plvl == 5000) && rev
+    n + "(#{date}r#{rev})"
+  elsif plvl && /p#{plvl}/ !~ n
+    n + "(#{date}p#{plvl})"
+  else
+    #n
+    n + "(#{date})"
+  end
+end
+
+#p __LINE__
+commands = collect_commands
+#p __LINE__
+commands = sort_by_name(commands)
+
+if File.file?("./ruby") && File.executable?("./ruby")
+  commands << "./ruby"
+end
+
+titles = {}
+title_len = commands.map {|n| n.length }.max + 17
+indent = ' ' * title_len
+
+commands.each {|n|
+  t = verify_version(n)
+  print t.ljust(title_len)
+  prefix = ''
+  r, w = IO.pipe
+  pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
+  w.close
+  beginning = true
+  after_newline = false
+  begin
+    loop {
+      s = r.readpartial(4096)
+      s.each_line {|line|
+        if after_newline
+          print indent
+          after_newline = false
+        end
+        print line
+        if /\n\z/ =~ line
+          after_newline = true
+        end
+      }
+      beginning = false
+    }
+  rescue EOFError
+    r.close
+  end
+  Process.wait pid
+  status = $?
+  if status.to_i != 0
+    if !beginning
+      puts if !after_newline
+      print ' ' * (title_len-4)
+    end
+    p status
+    after_newline = true
+  end
+  puts if !after_newline
+}
