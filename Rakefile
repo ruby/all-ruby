@@ -437,21 +437,19 @@ class RubySource
   def extract_tarball(filename)
     filename = File.realpath(filename)
     FileUtils.mkpath dirname
-    Dir.chdir(dirname) {
-      ary = Dir.glob("*/ruby.c")
-      if ary.empty?
-        # Assume recent GNU tar which recognize compression automatically.
-        system "tar", "xf", filename
-        ary = Dir.glob("*/ruby.c")
-      end
-      if ary.empty?
-        raise "no ruby.c found."
-      end
-      if 1 < ary.length
-        raise "multiple ruby.c found."
-      end
-      File.dirname(ary[0])
-    }
+    ary = Dir.glob("#{dirname}/*/ruby.c")
+    if ary.empty?
+      # Assume recent GNU tar which recognize compression automatically.
+      system "tar", "xf", filename, :chdir => dirname
+      ary = Dir.glob("#{dirname}/*/ruby.c")
+    end
+    if ary.empty?
+      raise "no ruby.c found."
+    end
+    if 1 < ary.length
+      raise "multiple ruby.c found."
+    end
+    File.basename(File.dirname(ary[0]))
   end
 
   def obtain_source
@@ -534,10 +532,8 @@ class RubySource
   def patch(srcdir, name)
     prefix = File.realpath(dirname)
     patch = File.realpath("patch/#{name}.diff")
-    Dir.chdir("#{dirname}/#{srcdir}") {
-      command = ["patch", :in => patch]
-      return false if !run_command("patch-#{name}", command, prefix)
-    }
+    command = ["patch", :in => patch, :chdir => "#{dirname}/#{srcdir}"]
+    return false if !run_command("patch-#{name}", command, prefix)
   end
 
   def apply_workaround(srcdir)
@@ -577,60 +573,56 @@ class RubySource
 
   def build_ruby32(srcdir)
     prefix = File.realpath(dirname)
-    Dir.chdir("#{dirname}/#{srcdir}") {
-      puts "build #{srcdir}"
+    puts "build #{srcdir}"
 
-      gcc = which('gcc')
-      raise "gcc not found." if !gcc
+    gcc = which('gcc')
+    raise "gcc not found." if !gcc
 
-      FileUtils.mkpath "#{prefix}/bin"
-      File.open("#{prefix}/bin/gcc", "w") {|f|
-        f.puts "#!/bin/sh"
-        f.puts "#{gcc} -m32 \"$@\""
-      }
-      File.chmod(0755, "#{prefix}/bin/gcc")
-
-      setup = [{'CFLAGS'=>'-g -O0',
-                'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
-               'setarch', 'i686']
-
-      command = [*setup, "./configure", "--prefix=#{prefix}"]
-      if !run_command("configure", command, prefix)
-        raise "configure fail"
-      end
-
-      command = [*setup, "make"]
-      if !run_command("make", command, prefix)
-        raise "make fail"
-      end
-
-      command = [*setup, "make", "install"]
-      if !run_command("install", command, prefix)
-        raise "install fail"
-      end
+    FileUtils.mkpath "#{prefix}/bin"
+    File.open("#{prefix}/bin/gcc", "w") {|f|
+      f.puts "#!/bin/sh"
+      f.puts "#{gcc} -m32 \"$@\""
     }
+    File.chmod(0755, "#{prefix}/bin/gcc")
+
+    setup = [{'CFLAGS'=>'-g -O0',
+              'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
+             'setarch', 'i686']
+
+    command = [*setup, "./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
+    if !run_command("configure", command, prefix)
+      raise "configure fail"
+    end
+
+    command = [*setup, "make", :chdir => "#{dirname}/#{srcdir}"]
+    if !run_command("make", command, prefix)
+      raise "make fail"
+    end
+
+    command = [*setup, "make", "install", :chdir => "#{dirname}/#{srcdir}"]
+    if !run_command("install", command, prefix)
+      raise "install fail"
+    end
   end
 
   def build_ruby(srcdir)
     prefix = File.realpath(dirname)
-    Dir.chdir("#{dirname}/#{srcdir}") {
-      puts "build #{srcdir}"
+    puts "build #{srcdir}"
 
-      command = ["./configure", "--prefix=#{prefix}"]
-      if !run_command("configure", command, prefix)
-        raise "configure fail"
-      end
+    command = ["./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
+    if !run_command("configure", command, prefix)
+      raise "configure fail"
+    end
 
-      command = ["make"]
-      if !run_command("make", command, prefix)
-        raise "make fail"
-      end
+    command = ["make", :chdir => "#{dirname}/#{srcdir}"]
+    if !run_command("make", command, prefix)
+      raise "make fail"
+    end
 
-      command = ["make", "install"]
-      if !run_command("install", command, prefix)
-        raise "install fail"
-      end
-    }
+    command = ["make", "install", :chdir => "#{dirname}/#{srcdir}"]
+    if !run_command("install", command, prefix)
+      raise "install fail"
+    end
   end
 
 end
