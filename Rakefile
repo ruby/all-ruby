@@ -37,6 +37,16 @@
 # rake all      : install all versions
 # rake VERSION  : install specific version
 
+# This Rakefile assumes Debian GNU/Linux amd64.
+#
+# Ruby didn't support 64bit environment until Ruby 1.8.0.
+# So 32bit compilation tools are required to install older Ruby.
+#
+#   sudo dpkg --add-architecture i386
+#   sudo aptitude install gcc-multilib \
+#     zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.0:i386 \
+#     libreadline6:i386 libffi5:i386
+
 require 'open-uri'
 require 'fileutils'
 require 'pp'
