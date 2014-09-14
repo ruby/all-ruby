@@ -53,7 +53,8 @@ require 'pp'
 
 class RubySource
 
-  URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
+  URI_BASE = 'http://cache.ruby-lang.org/pub/ruby/'
+  #URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
   TARBALLS = [
     [
