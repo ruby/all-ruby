@@ -637,7 +637,12 @@ task :all => RubySource::TABLE.map {|h| h[:version] }.reverse
 RubySource::TABLE.each {|h|
   source = RubySource.new(h[:version])
 
-  task h[:version] => "#{h[:version]}/bin/ruby"
+  task h[:version] => "bin/ruby-#{h[:version]}"
+
+  task "bin/ruby-#{h[:version]}" => "#{h[:version]}/bin/ruby" do |t|
+    FileUtils.mkpath File.dirname(t.name)
+    File.symlink "../#{h[:version]}/bin/ruby", "bin/ruby-#{h[:version]}"
+  end
 
   file "#{h[:version]}/bin/ruby" => "DIST/#{h[:fn]}" do |t|
     srcdir = source.extract_tarball("DIST/#{h[:fn]}")
