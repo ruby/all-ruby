@@ -533,7 +533,7 @@ class RubySource
   def patch(srcdir, name)
     prefix = File.realpath(dirname)
     patch = File.realpath("patch/#{name}.diff")
-    command = ["patch", :in => patch, :chdir => "#{dirname}/#{srcdir}"]
+    command = ["patch", "-p0", :in => patch, :chdir => "#{dirname}/#{srcdir}"]
     return false if !run_command("patch-#{name}", command, prefix)
   end
 
@@ -552,6 +552,12 @@ class RubySource
        local_version_le('1.8.7-p22')
       patch srcdir, "math-define-erange"
     end
+    if local_version_between('1.3.3-990430', '1.3.3-990430')
+      patch srcdir, 'rbconfig-expand'
+    end
+    if version_eq('1.1d0')
+      patch srcdir, 'extmk-heredoc'
+    end
     parse_y_fn = "#{dirname}/#{srcdir}/parse.y"
     if File.file?(parse_y_fn)
       parse_y_orig = File.read(parse_y_fn)
@@ -563,9 +569,6 @@ class RubySource
       if parse_y_orig != parse_y
         open(parse_y_fn, "w") {|f| f.print parse_y }
       end
-    end
-    if local_version_between('1.3.3-990430', '1.3.3-990430')
-      patch srcdir, 'rbconfig-expand'
     end
     if version_eq('1.3.2-990413')
       FileUtils.rmtree "#{dirname}/#{srcdir}/ext/nkf"

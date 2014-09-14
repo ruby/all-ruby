@@ -1,0 +1,11 @@
+--- ext/extmk.rb.in-	2014-09-15 08:56:07.932836025 +0900
++++ ext/extmk.rb.in	2014-09-15 08:56:14.016816285 +0900
+@@ -313,7 +313,7 @@
+   mfile.printf $objs.join(" ")
+   mfile.printf "\n"
+ 
+-  mfile.printf << EOS
++  mfile.printf <<EOS
+ TARGET = #{target}.#{$static ? "a" : "@DLEXT@"}
+ 
+ INSTALL = #{$dots}@INSTALL@
