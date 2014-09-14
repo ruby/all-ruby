@@ -555,6 +555,12 @@ class RubySource
     patch srcdir, "parse-midrule-type-1.3.4-990531" if version_eq('1.3.4-990531')
     patch srcdir, "parse-midrule-type-1.3.1-990224" if local_version_between('1.3.1-990224', '1.3.1-990225')
     patch srcdir, "parse-midrule-type-1.2.2" if version_eq('1.2.2')
+    if local_version_between('1.3.3-990430', '1.3.3-990430')
+      patch srcdir, 'rbconfig-expand'
+    end
+    if version_eq('1.3.2-990413')
+      FileUtils.rmtree "#{dirname}/#{srcdir}/ext/nkf"
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else
