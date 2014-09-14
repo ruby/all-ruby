@@ -552,9 +552,18 @@ class RubySource
        local_version_le('1.8.7-p22')
       patch srcdir, "math-define-erange"
     end
-    patch srcdir, "parse-midrule-type-1.3.4-990531" if version_eq('1.3.4-990531')
-    patch srcdir, "parse-midrule-type-1.3.1-990224" if local_version_between('1.3.1-990224', '1.3.1-990225')
-    patch srcdir, "parse-midrule-type-1.2.2" if version_eq('1.2.2')
+    parse_y_fn = "#{dirname}/#{srcdir}/parse.y"
+    if File.file?(parse_y_fn)
+      parse_y_orig = File.read(parse_y_fn)
+      parse_y = parse_y_orig.dup
+      parse_y.sub!(/^arg\t\t: variable '=' {\$\$ = assignable\(\$1, 0\);} arg$/,
+                   "arg\t\t: variable '=' {$<node>$ = assignable($1, 0);} arg")
+      parse_y.sub!(/^\t\t\| variable tOP_ASGN \{\$\$ = assignable\(\$1, 0\);\} arg$/,
+                   "\t\t| variable tOP_ASGN {$<node>$ = assignable($1, 0);} arg")
+      if parse_y_orig != parse_y
+        open(parse_y_fn, "w") {|f| f.print parse_y }
+      end
+    end
     if local_version_between('1.3.3-990430', '1.3.3-990430')
       patch srcdir, 'rbconfig-expand'
     end
