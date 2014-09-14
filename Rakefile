@@ -636,7 +636,7 @@ task :list do
   puts RubySource::TABLE.map {|h| h[:version] }
 end
 
-task :all => RubySource::TABLE.map {|h| h[:version] }.reverse
+multitask :all => RubySource::TABLE.map {|h| h[:version] }.reverse
 
 RubySource::TABLE.each {|h|
   source = RubySource.new(h[:version])
