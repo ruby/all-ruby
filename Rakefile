@@ -46,34 +46,34 @@ class RubySource
   URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
   TARBALLS = [
-    %w[
-      1.0/ruby-0.49.tar.gz
-      1.0/ruby-0.50.tar.gz
-      1.0/ruby-0.51.tar.gz
-      1.0/ruby-0.54.tar.gz
-      1.0/ruby-0.55.tar.gz
-      1.0/ruby-0.60.tar.gz
-      1.0/ruby-0.62.tar.gz
-      1.0/ruby-0.63.tar.gz
-      1.0/ruby-0.64.tar.gz
-      1.0/ruby-0.65.tar.gz
-      1.0/ruby-0.69.tar.gz
-      1.0/ruby-0.71.tar.gz
-      1.0/ruby-0.73.tar.gz
-      1.0/ruby-0.73-950413.tar.gz
-      1.0/ruby-0.76.tar.gz
-      1.0/ruby-0.95.tar.gz
-      1.0/ruby-0.99.4-961224.tar.gz
-      1.0/ruby-1.0-961225.tar.gz
-      1.0/ruby-1.0-971002.tar.gz
-      1.0/ruby-1.0-971003.tar.gz
-      1.0/ruby-1.0-971015.tar.gz
-      1.0/ruby-1.0-971021.tar.gz
-      1.0/ruby-1.0-971118.tar.gz
-      1.0/ruby-1.0-971125.tar.gz
-      1.0/ruby-1.0-971204.tar.gz
-      1.0/ruby-1.0-971209.tar.gz
-      1.0/ruby-1.0-971225.tar.gz
+    [
+      '1.0/ruby-0.49.tar.gz',
+      '1.0/ruby-0.50.tar.gz',
+      '1.0/ruby-0.51.tar.gz',
+      '1.0/ruby-0.54.tar.gz',
+      '1.0/ruby-0.55.tar.gz',
+      '1.0/ruby-0.60.tar.gz',
+      #'1.0/ruby-0.62.tar.gz', # not in gzip format
+      #'1.0/ruby-0.63.tar.gz', # not in gzip format
+      '1.0/ruby-0.64.tar.gz',
+      '1.0/ruby-0.65.tar.gz',
+      '1.0/ruby-0.69.tar.gz',
+      '1.0/ruby-0.71.tar.gz',
+      '1.0/ruby-0.73.tar.gz',
+      '1.0/ruby-0.73-950413.tar.gz',
+      '1.0/ruby-0.76.tar.gz',
+      '1.0/ruby-0.95.tar.gz',
+      '1.0/ruby-0.99.4-961224.tar.gz',
+      '1.0/ruby-1.0-961225.tar.gz',
+      '1.0/ruby-1.0-971002.tar.gz',
+      '1.0/ruby-1.0-971003.tar.gz',
+      '1.0/ruby-1.0-971015.tar.gz',
+      '1.0/ruby-1.0-971021.tar.gz',
+      '1.0/ruby-1.0-971118.tar.gz',
+      '1.0/ruby-1.0-971125.tar.gz',
+      '1.0/ruby-1.0-971204.tar.gz',
+      '1.0/ruby-1.0-971209.tar.gz',
+      '1.0/ruby-1.0-971225.tar.gz',
     ],
     %w[
       1.1a/ruby-1.1a0.tar.gz
@@ -410,10 +410,9 @@ class RubySource
     @h[:uri]
   end
 
-  def obtain_tarball
-    dstname = "#{dirname}/#{filename}"
+  def obtain_tarball(dstname)
     tmpname = "#{dstname}.tmp"
-    FileUtils.mkpath dirname
+    FileUtils.mkpath File.dirname(dstname)
     unless File.file? dstname
       URI(uri).open {|src|
         open(tmpname, "w") {|dst|
@@ -425,7 +424,9 @@ class RubySource
     dstname
   end
 
-  def extract_tarball
+  def extract_tarball(filename)
+    filename = File.realpath(filename)
+    FileUtils.mkpath dirname
     Dir.chdir(dirname) {
       ary = Dir.glob("*/ruby.c")
       if ary.empty?
@@ -447,12 +448,6 @@ class RubySource
     create_directory
     obtain_tarball
     extract_tarball
-  end
-
-  def create_directory
-    if !File.directory?(dirname)
-      Dir.mkdir(dirname)
-    end
   end
 
   def version_eq(version)
@@ -542,14 +537,17 @@ class RubySource
     if version_eq('1.9.3-p426')
       patch srcdir, 'signal-unistd'
     end
+    if local_version_between('1.9.1-preview2', '1.9.1-p0')
+      patch srcdir, "cont-elif"
+    end
     if global_version_eq('1.8.5') ||
        local_version_le('1.8.6-p230') ||
        local_version_le('1.8.7-p22')
       patch srcdir, "math-define-erange"
     end
-    if local_version_between('1.9.1-preview2', '1.9.1-p0')
-      patch srcdir, "cont-elif"
-    end
+    patch srcdir, "parse-midrule-type-1.3.4-990531" if version_eq('1.3.4-990531')
+    patch srcdir, "parse-midrule-type-1.3.1-990224" if local_version_between('1.3.1-990224', '1.3.1-990225')
+    patch srcdir, "parse-midrule-type-1.2.2" if version_eq('1.2.2')
     if global_version_lt('1.8.0')
       :build_ruby32
     else
@@ -557,19 +555,42 @@ class RubySource
     end
   end
 
+  def which(command)
+    ENV['PATH'].split(/:/).each {|dir|
+      c = "#{dir}/#{command}"
+      if File.executable? c
+        return c
+      end
+    }
+    nil
+  end
+
   def build_ruby32(srcdir)
     prefix = File.realpath(dirname)
     Dir.chdir("#{dirname}/#{srcdir}") {
       puts "build #{srcdir}"
 
-      env = {"CC"=>"gcc -m32", "CFLAGS"=>"-g -O0"}
-      command = [env, "setarch", "i686", "./configure", "--prefix=#{prefix}"]
+      gcc = which('gcc')
+      raise "gcc not found." if !gcc
+
+      FileUtils.mkpath "#{prefix}/bin"
+      File.open("#{prefix}/bin/gcc", "w") {|f|
+        f.puts "#!/bin/sh"
+        f.puts "#{gcc} -m32 \"$@\""
+      }
+      File.chmod(0755, "#{prefix}/bin/gcc")
+
+      setup = [{'CFLAGS'=>'-g -O0',
+                'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
+               'setarch', 'i686']
+
+      command = [*setup, "./configure", "--prefix=#{prefix}"]
       next if !run_command("configure", command, prefix)
 
-      command = ["make"]
+      command = [*setup, "make"]
       next if !run_command("make", command, prefix)
 
-      command = ["make", "install"]
+      command = [*setup, "make", "install"]
       next if !run_command("install", command, prefix)
     }
   end
@@ -608,13 +629,13 @@ RubySource::TABLE.each {|h|
 
   task h[:version] => "#{h[:version]}/bin/ruby"
 
-  file "#{h[:version]}/bin/ruby" => "#{h[:version]}/#{h[:fn]}" do |t|
-    srcdir = source.obtain_source
+  file "#{h[:version]}/bin/ruby" => "DIST/#{h[:fn]}" do |t|
+    srcdir = source.extract_tarball("DIST/#{h[:fn]}")
     method = source.apply_workaround(srcdir)
     source.send(method, srcdir)
   end
 
-  file "#{h[:version]}/#{h[:fn]}" do |t|
-    source.obtain_tarball
+  file "DIST/#{h[:fn]}" do |t|
+    source.obtain_tarball("DIST/#{h[:fn]}")
   end
 }

@@ -1,0 +1,12 @@
+--- signal.c-	2014-09-14 01:17:58.048916533 +0900
++++ signal.c	2014-09-14 01:18:14.960859567 +0900
+@@ -17,6 +17,9 @@
+ #include <stdio.h>
+ #include <errno.h>
+ #include "ruby_atomic.h"
++#ifdef HAVE_UNISTD_H
++# include <unistd.h>
++#endif
+ 
+ #if !defined(_WIN32) && !defined(HAVE_GCC_ATOMIC_BUILTINS)
+ rb_atomic_t

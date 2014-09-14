@@ -1,0 +1,11 @@
+--- parse.y-	2014-09-14 15:44:10.053334919 +0900
++++ parse.y	2014-09-14 15:44:28.029270123 +0900
+@@ -569,7 +569,7 @@
+ 		| kTHEN | kTRUE | kUNDEF | kUNLESS_MOD | kUNTIL_MOD | kWHEN
+ 		| kWHILE_MOD | kYIELD
+ 
+-arg		: variable '=' {$$ = assignable($1, 0);} arg
++arg		: variable '=' {$<node>$ = assignable($1, 0);} arg
+ 		    {
+ 		        $$ = $<node>3;
+ 			if ($$) {

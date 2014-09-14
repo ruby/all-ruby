@@ -1,0 +1,11 @@
+--- math.c-	2014-09-13 13:15:11.594193976 +0900
++++ math.c	2014-09-13 13:15:17.414173696 +0900
+@@ -34,7 +34,7 @@
+ 	if (isnan(x)) {
+ #if defined(EDOM)
+ 	    errno = EDOM;
+-#elif define(ERANGE)
++#elif defined(ERANGE)
+ 	    errno = ERANGE;
+ #endif
+ 	    continue;
