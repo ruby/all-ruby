@@ -527,7 +527,7 @@ class RubySource
     system(*command, opt)
     status = $?
     open(status_fn, "w") {|f| f.puts status.to_s.sub(/\Apid \d+ /, '') }
-    puts "failure" if !status.success?
+    puts "fail #{tag}" if !status.success?
     status.success?
   end
 
@@ -595,13 +595,19 @@ class RubySource
                'setarch', 'i686']
 
       command = [*setup, "./configure", "--prefix=#{prefix}"]
-      next if !run_command("configure", command, prefix)
+      if !run_command("configure", command, prefix)
+        raise "configure fail"
+      end
 
       command = [*setup, "make"]
-      next if !run_command("make", command, prefix)
+      if !run_command("make", command, prefix)
+        raise "make fail"
+      end
 
       command = [*setup, "make", "install"]
-      next if !run_command("install", command, prefix)
+      if !run_command("install", command, prefix)
+        raise "install fail"
+      end
     }
   end
 
@@ -611,13 +617,19 @@ class RubySource
       puts "build #{srcdir}"
 
       command = ["./configure", "--prefix=#{prefix}"]
-      next if !run_command("configure", command, prefix)
+      if !run_command("configure", command, prefix)
+        raise "configure fail"
+      end
 
       command = ["make"]
-      next if !run_command("make", command, prefix)
+      if !run_command("make", command, prefix)
+        raise "make fail"
+      end
 
       command = ["make", "install"]
-      next if !run_command("install", command, prefix)
+      if !run_command("install", command, prefix)
+        raise "install fail"
+      end
     }
   end
 
@@ -639,8 +651,11 @@ RubySource::TABLE.each {|h|
 
   task h[:version] => "bin/ruby-#{h[:version]}"
 
-  task "bin/ruby-#{h[:version]}" => "#{h[:version]}/bin/ruby" do |t|
+  file "bin/ruby-#{h[:version]}" => "#{h[:version]}/bin/ruby" do |t|
     FileUtils.mkpath File.dirname(t.name)
+    unless File.exist? "#{h[:version]}/bin/ruby"
+      raise "ruby binary not exist"
+    end
     File.symlink "../#{h[:version]}/bin/ruby", "bin/ruby-#{h[:version]}"
   end
 
