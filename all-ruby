@@ -31,7 +31,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 def parse_name(n)
-  return nil if /\Aruby-(([\d.]+)(p\d+|head|dev)?)(-pth)?\z/ !~ n
+  return nil if /\Aruby-(([\d.]+)(-?p\d+|head|dev)?)(-pth)?\z/ !~ n
   ver = $2
   pth = $4 ? 1 : 0
   case $1
