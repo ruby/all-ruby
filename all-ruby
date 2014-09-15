@@ -80,8 +80,8 @@ end
 def verify_version(n)
   name_ver, name_plvl, name_pth = parse_name(n)
   version_code = <<'End'
-print "ver=", RUBY_VERSION, "\n"
-print "date=", RUBY_RELEASE_DATE, "\n"
+print "ver=", defined?(RUBY_VERSION) ? RUBY_VERSION : VERSION, "\n"
+print "date=", defined?(RUBY_RELEASE_DATE) ? RUBY_RELEASE_DATE : "nil", "\n"
 print "plvl=", defined?(RUBY_PATCHLEVEL) ? RUBY_PATCHLEVEL : "nil", "\n"
 print "rev=", defined?(RUBY_REVISION) ? RUBY_REVISION : "nil", "\n"
 End
