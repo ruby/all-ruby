@@ -114,6 +114,11 @@ if File.file?("./ruby") && File.executable?("./ruby")
   commands << "./ruby"
 end
 
+if commands.empty?
+  puts "no ruby versions found\n"
+  exit false
+end
+
 titles = {}
 title_len = commands.map {|n| n.length }.max + 17
 indent = ' ' * title_len
