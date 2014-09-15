@@ -47,7 +47,7 @@ def parse_name(n)
     plvl = 0
   end
   ver = ver.split(/\./).map {|d| d.to_i }
-  ver << 9999 if ver.length == 2
+  ver << 9999 if ver.length == 2 && 1 < ver[0]
   [ver, plvl, pth]
 end
 
