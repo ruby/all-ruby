@@ -350,7 +350,10 @@ class RubySource
       2.1/ruby-2.1.0.tar.bz2
       2.1/ruby-2.1.1.tar.bz2
       2.1/ruby-2.1.2.tar.bz2
-    ]
+    ],
+    %w[
+      2.2/ruby-2.2.0-preview1.tar.bz2
+    ],
   ]
 
   TABLE = []
