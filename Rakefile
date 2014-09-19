@@ -352,7 +352,7 @@ class RubySource
       2.1/ruby-2.1.2.tar.bz2
     ],
     %w[
-      2.2/ruby-2.2.0-preview1.tar.bz2
+      2.2/ruby-2.2.0-preview1.tar.xz
     ],
   ]
 
@@ -365,7 +365,7 @@ class RubySource
       version = fn.dup
       prefix = suffix = ''
       prefix = $& if version.sub!(/\Aruby-/, '')
-      suffix = $& if version.sub!(/\.tar\.(gz|bz2)\z/, '')
+      suffix = $& if version.sub!(/\.tar\.(gz|bz2|xz)\z/, '')
       TABLE << {
         :i => i,
         :j => j,
