@@ -51,10 +51,28 @@ require 'open-uri'
 require 'fileutils'
 require 'pp'
 
-class RubySource
+URI_BASE = 'http://cache.ruby-lang.org/pub/ruby/'
+#URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
-  URI_BASE = 'http://cache.ruby-lang.org/pub/ruby/'
-  #URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
+def make_entry(relpath)
+  uri = URI_BASE + relpath
+  dir, fn = File.split(relpath)
+  version = fn.dup
+  prefix = suffix = ''
+  prefix = $& if version.sub!(/\Aruby-/, '')
+  suffix = $& if version.sub!(/\.tar\.(gz|bz2|xz)\z/, '')
+  {
+    :relpath => relpath,
+    :uri => uri,
+    :dir => dir,
+    :fn => fn,
+    :prefix => prefix,
+    :version => version,
+    :suffix => suffix,
+  }
+end
+
+class RubySource
 
   TARBALLS = File.read('versions').
     gsub(/#.*/, '').
@@ -67,23 +85,10 @@ class RubySource
 
   TARBALLS.each_with_index {|ary, i|
     ary.each_with_index {|relpath, j|
-      dir, fn = File.split(relpath)
-      uri = URI_BASE + relpath
-      version = fn.dup
-      prefix = suffix = ''
-      prefix = $& if version.sub!(/\Aruby-/, '')
-      suffix = $& if version.sub!(/\.tar\.(gz|bz2|xz)\z/, '')
-      TABLE << {
-        :i => i,
-        :j => j,
-        :uri => uri,
-        :relpath => relpath,
-        :dir => dir,
-        :fn => fn,
-        :prefix => prefix,
-        :version => version,
-        :suffix => suffix,
-      }
+      h = make_entry(relpath)
+      h[:i] = i
+      h[:j] = j
+      TABLE << h
     }
   }
 
