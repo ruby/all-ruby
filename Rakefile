@@ -73,6 +73,21 @@ def make_entry(relpath)
   }
 end
 
+def hashize_version_entry(v)
+  h = {}
+  case v
+  when String
+    h[:relpath] = v
+  when Hash
+    v.each {|k, v|
+      h[k.intern] = v
+    }
+  else
+    raise "unexpected entry: #{v.inspect}"
+  end
+  h
+end
+
 class RubySource
 
   TARBALLS = JSON.load(File.read("versions.json"))
@@ -81,18 +96,9 @@ class RubySource
 
   TARBALLS.each_with_index {|ary, i|
     ary.each_with_index {|v, j|
-      h = {}
-      case v
-      when String
-        relpath = v
-      when Hash
-        next if v.has_key?("enable") && !v["enable"]
-        relpath = v["relpath"]
-        h = v
-      else
-        raise "unexpected entry: #{v.inspect}"
-      end
-      h.update make_entry(relpath)
+      h = hashize_version_entry(v)
+      next if h.has_key?(:enable) && !h[:enable]
+      h.update make_entry(h[:relpath])
       h[:i] = i
       h[:j] = j
       TABLE << h
