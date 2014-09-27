@@ -411,3 +411,83 @@ RubySource::TABLE.each {|h|
     source.obtain_tarball("DIST/#{h[:fn]}")
   end
 }
+
+def extract_entries(index_html)
+  hs = []
+  index_html.scan(/<a href="(.*?)">/) {
+    uri = (index_html.base_uri + $1).to_s
+    next unless uri.start_with? URI_BASE
+    relpath = uri[URI_BASE.length..-1]
+    next if relpath.empty?
+    h = make_entry(relpath)
+    next if h[:suffix].empty?
+    hs << h
+  }
+  hs
+end
+
+def filter_suffix(hs)
+  hs.group_by {|h| [h[:prefix], h[:version]] }.map {|_, hh|
+    hh.sort_by {|h|
+      case h[:suffix]
+      when ".tar.gz" then 0
+      when ".tar.bz2" then 1
+      when ".tar.xz" then 2
+      else -1
+      end
+    }[-1]
+  }
+end
+
+def common_prefix_length(str1, str2)
+  if str2.length < str1.length
+    str1, str2 = str2, str1
+  end
+  str1.length.times {|i|
+    if str1[i] != str2[i]
+      return i
+    end
+  }
+  str1.length
+end
+
+def add_version(versions, relpath)
+  prefix_length_list = versions.map {|ary|
+    ary.map {|v|
+      h = hashize_version_entry(v)
+      return if relpath == h[:relpath]
+      common_prefix_length(relpath, h[:relpath])
+    }.max
+  }
+  target_list_index = (0...prefix_length_list.length).max_by {|i| prefix_length_list[i] }
+  versions[target_list_index] << relpath
+end
+
+def update_versions(relpath_list)
+  return if relpath_list.empty?
+  content1 = File.read("versions.json")
+  versions = JSON.load(content1)
+  relpath_list.each {|relpath|
+    add_version versions, relpath
+  }
+  content2 = JSON.pretty_generate(versions)
+  if content1 != content2
+    open("versions.json", "w") {|f|
+      f.puts content2
+    }
+  end
+end
+
+task 'sync' do
+  dirs = RubySource::TABLE.map {|h|
+    h[:uri].sub(%r{/[^/]*\z}, '/')
+  }.uniq
+  dirs.reverse_each {|dir|
+    index_html = URI(dir).read
+    hs = extract_entries(index_html)
+    hs = filter_suffix(hs)
+    relpath_list = hs.map {|h| h[:relpath] }
+    update_versions relpath_list
+  }
+end
+
