@@ -269,6 +269,7 @@ class RubySource
     if global_version_lt('1.9.3-p0')
       dir = "#{dirname}/#{srcdir}/ext/openssl"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
+      File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
     if version_eq('1.9.3-p426')
       patch srcdir, 'signal-unistd'
@@ -305,6 +306,7 @@ class RubySource
     if version_eq('1.3.2-990413')
       dir = "#{dirname}/#{srcdir}/ext/nkf"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
+      File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
     if global_version_lt('1.8.0')
       :build_ruby32
