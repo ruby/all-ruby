@@ -68,41 +68,29 @@ def collect_commands
       next
     end
   }
+  all_ruby_bin = File.join(File.dirname(File.expand_path(__FILE__)), 'bin')
+  if File.directory? all_ruby_bin
+    Dir.foreach(all_ruby_bin) {|n|
+      next if !parse_name(n)
+      next if commands.include? n
+      bin = "#{all_ruby_bin}/#{n}"
+      next if commands.include? bin
+      if File.file?(bin) && File.executable?(bin)
+        commands << bin
+      end
+    }
+  end
   commands
 end
 
 def sort_by_name(commands)
   commands.sort_by {|n|
-    parse_name(n)
+    parse_name(File.basename(n))
   }
 end
 
 def verify_version(n)
-  name_ver, name_plvl, name_pth = parse_name(n)
-  version_code = <<'End'
-print "ver=", defined?(RUBY_VERSION) ? RUBY_VERSION : VERSION, "\n"
-print "date=", defined?(RUBY_RELEASE_DATE) ? RUBY_RELEASE_DATE : "nil", "\n"
-print "plvl=", defined?(RUBY_PATCHLEVEL) ? RUBY_PATCHLEVEL : "nil", "\n"
-print "rev=", defined?(RUBY_REVISION) ? RUBY_REVISION : "nil", "\n"
-End
-  out = IO.popen("#{n} -e '#{version_code}'") {|f| f.read }
-  return nil if !$?.success?
-  return nil if /ver=(.*)/ !~ out
-  ver = $1
-  return nil if /date=(.*)/ !~ out
-  date = $1
-  return nil if /plvl=(.*)/ !~ out
-  plvl = $1 == 'nil' ? nil : $1.to_i
-  return nil if /rev=(.*)/ !~ out
-  rev = $1 == 'nil' ? nil : $1.to_i
-  if (plvl == 0 || plvl == -1 || plvl == 5000) && rev
-    n + "(#{date}r#{rev})"
-  elsif plvl && /p#{plvl}/ !~ n
-    n + "(#{date}p#{plvl})"
-  else
-    #n
-    n + "(#{date})"
-  end
+  return File.basename(n)
 end
 
 #p __LINE__
@@ -120,11 +108,11 @@ if commands.empty?
 end
 
 titles = {}
-title_len = commands.map {|n| n.length }.max + 17
+title_len = commands.map {|n| File.basename(n).length }.max + 1
 indent = ' ' * title_len
 
 commands.each {|n|
-  t = verify_version(n)
+  t = File.basename(n)
   print t.ljust(title_len)
   prefix = ''
   r, w = IO.pipe
