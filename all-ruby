@@ -68,7 +68,7 @@ def collect_commands
       next
     end
   }
-  all_ruby_bin = File.join(File.dirname(File.expand_path(__FILE__)), 'bin')
+  all_ruby_bin = File.join(File.dirname(File.expand_path(File.realpath(__FILE__))), 'bin')
   if File.directory? all_ruby_bin
     Dir.foreach(all_ruby_bin) {|n|
       next if !parse_name(n)
