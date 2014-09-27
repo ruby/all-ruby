@@ -49,6 +49,7 @@
 
 require 'open-uri'
 require 'fileutils'
+require 'json'
 require 'pp'
 
 URI_BASE = 'http://cache.ruby-lang.org/pub/ruby/'
@@ -74,18 +75,24 @@ end
 
 class RubySource
 
-  TARBALLS = File.read('versions').
-    gsub(/#.*/, '').
-    gsub(/^\s*\n/, '').
-    split(/^--\n/).map {|chunk|
-      chunk.split(/\n/)
-    }
+  TARBALLS = JSON.load(File.read("versions.json"))
 
   TABLE = []
 
   TARBALLS.each_with_index {|ary, i|
-    ary.each_with_index {|relpath, j|
-      h = make_entry(relpath)
+    ary.each_with_index {|v, j|
+      h = {}
+      case v
+      when String
+        relpath = v
+      when Hash
+        next if v.has_key?("enable") && !v["enable"]
+        relpath = v["relpath"]
+        h = v
+      else
+        raise "unexpected entry: #{v.inspect}"
+      end
+      h.update make_entry(relpath)
       h[:i] = i
       h[:j] = j
       TABLE << h
