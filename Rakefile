@@ -288,6 +288,9 @@ class RubySource
     if version_eq('1.1d0')
       patch srcdir, 'extmk-heredoc'
     end
+    if local_version_between('1.1b9', '1.1b9_19')
+      patch srcdir, 'glob-alloca'
+    end
     if version_eq('1.0-971225')
       patch srcdir, 'varargs'
     end
