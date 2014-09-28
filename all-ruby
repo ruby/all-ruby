@@ -31,24 +31,24 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 def parse_name(n)
-  return nil if /\Aruby-(([\d.]+)(-?p\d+|head|dev)?)(-pth)?\z/ !~ n
-  ver = $2
-  pth = $4 ? 1 : 0
-  case $1
-  when /\A1\.8\z/
-    plvl = 5000
-  when /head\z/
-    plvl = 4999
-  when /dev\z/
-    plvl = -1
-  when /p(\d+)\z/
-    plvl = $1.to_i
-  else
-    plvl = 0
-  end
-  ver = ver.split(/\./).map {|d| d.to_i }
-  ver << 9999 if ver.length == 2 && 1 < ver[0]
-  [ver, plvl, pth]
+  return nil if /\Aruby-[0-9]/ !~ n
+  ary = []
+  n.scan(/\d+|[a-z]+|./m) {
+    str = $&
+    case str
+    when 'preview'
+      ary << "A"
+    when 'rc'
+      ary << "B"
+    when 'p'
+      ary << "C"
+    end
+    if /\A\d+\z/ =~ str
+      str = str.rjust(100, '0')
+    end
+    ary << str
+  }
+  ary
 end
 
 def collect_commands
