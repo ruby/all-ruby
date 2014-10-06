@@ -108,12 +108,18 @@ if commands.empty?
 end
 
 titles = {}
-title_len = commands.map {|n| File.basename(n).length }.max + 1
+commands.each {|n|
+  if n == './ruby'
+    titles[n] = n
+  else
+    titles[n] = File.basename(n)
+  end
+}
+title_len = commands.map {|n| titles[n].length }.max + 1
 indent = ' ' * title_len
 
 commands.each {|n|
-  t = File.basename(n)
-  print t.ljust(title_len)
+  print titles[n].ljust(title_len)
   prefix = ''
   r, w = IO.pipe
   pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
