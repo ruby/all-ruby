@@ -468,6 +468,7 @@ def add_version(versions, relpath)
   }
   target_list_index = (0...prefix_length_list.length).max_by {|i| prefix_length_list[i] }
   versions[target_list_index] << relpath
+  puts "versions.json : #{relpath} added."
 end
 
 def update_versions(relpath_list)
@@ -479,9 +480,11 @@ def update_versions(relpath_list)
   }
   content2 = JSON.pretty_generate(versions)
   if content1 != content2
-    open("versions.json", "w") {|f|
+    open("versions.json.new", "w") {|f|
       f.puts content2
     }
+    #system("diff -u versions.json versions.json.new")
+    File.rename("versions.json.new", "versions.json")
   end
 end
 
