@@ -153,6 +153,7 @@ class RubySource
     tmpname = "#{dstname}.tmp"
     FileUtils.mkpath File.dirname(dstname)
     unless File.file? dstname
+      puts "download #{dstname}"
       URI(uri).open {|src|
         open(tmpname, "w") {|dst|
           IO.copy_stream(src, dst)
