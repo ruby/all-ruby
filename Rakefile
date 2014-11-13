@@ -211,6 +211,12 @@ class RubySource
     ret <= 0
   end
 
+  def local_version_ge(version)
+    ret = local_version_cmp(version)
+    return nil if ret.nil?
+    ret >= 0
+  end
+
   def local_version_between(v1, v2)
     # inclusive.
     ret1 = local_version_cmp(v1)
@@ -240,6 +246,12 @@ class RubySource
     ret < 0
   end
 
+  def global_version_ge(version)
+    ret = global_version_cmp(version)
+    return nil if ret.nil?
+    ret >= 0
+  end
+
   def run_command(tag, srcdir, command, prefixdir)
     FileUtils.mkpath "#{prefixdir}/log"
     log_fn = "#{prefixdir}/log/#{tag}.txt"
@@ -267,7 +279,9 @@ class RubySource
   end
 
   def apply_workaround(srcdir)
-    if global_version_lt('1.9.3-p0')
+    unless global_version_ge('1.9.3-p0') ||
+           local_version_ge('1.9.2-p290') ||
+           local_version_ge('1.8.7-p352')
       dir = "#{dirname}/#{srcdir}/ext/openssl"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
