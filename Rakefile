@@ -344,7 +344,7 @@ class RubySource
   def convert_varargs_to_stdarg(dir)
     funcs = {}
     Dir.glob("#{dir}/*.c").each {|fn|
-      src = File.read(fn)
+      src = File.binread(fn)
       next if /^\#include <stdarg\.h>\n/ =~ src
       next if /^\#include <varargs\.h>\n/ !~ src
       File.write("#{fn}.org", src)
@@ -363,7 +363,17 @@ class RubySource
         fargs = $2
         decls = $3
         body = $6
-        stdarg_decl = "#{func}(#{decls.gsub(/^ +|\n/, '').gsub(/;/, ',')} ...)"
+        decl_hash = {}
+        decls.each_line {|line|
+          line.gsub!(/^ +|;\n/, '')
+          n = line.scan(/[a-z_][a-z_0-9]*/)[-1]
+          decl_hash[n] = line
+        }
+        fargs.gsub!(/[a-z_][a-z_0-9]*/) {
+          n = $&
+          decl_hash[n] || "int #{n}"
+        }
+        stdarg_decl = "#{func}(#{fargs}, ...)"
         funcs[func] = stdarg_decl
         lastarg = stdarg_decl.scan(/[a-z_][a-z_0-9]*/)[-1]
         body.gsub!(/va_start\(([a-z]+)\)/) { "va_init_list(#{$1}, #{lastarg})" }
