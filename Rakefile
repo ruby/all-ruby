@@ -329,6 +329,11 @@ class RubySource
     if local_version_lt('1.1b9_19')
       convert_varargs_to_stdarg "#{dirname}/#{srcdir}"
     end
+    if local_version_between('1.1b9_05', '1.1b9_09')
+      src = File.read(parse_y_fn)
+      src.gsub!(/default:\n( *\})/) { "default: break;\n#{$1}" }
+      File.write(parse_y_fn, src)
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else
