@@ -19,7 +19,11 @@
     "1.0/ruby-0.64.tar.gz",
     "1.0/ruby-0.65.tar.gz",
     "1.0/ruby-0.69.tar.gz",
-    "1.0/ruby-0.71.tar.gz",
+    {
+      "relpath": "1.0/ruby-0.71.tar.gz",
+      "enable": false,
+      "comment": "no hash.c"
+    },
     "1.0/ruby-0.73.tar.gz",
     "1.0/ruby-0.73-950413.tar.gz",
     "1.0/ruby-0.76.tar.gz",
