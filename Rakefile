@@ -403,6 +403,9 @@ class RubySource
     if local_version_le('0.65')
       patch srcdir, 'gnuglob-alloca'
     end
+    if local_version_le('0.60')
+      patch srcdir, 'gnuglob-dirent'
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else
@@ -503,6 +506,10 @@ class RubySource
     setup = [{'CFLAGS'=>'-g -O0',
               'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
              'setarch', 'i686']
+
+    if local_version_le('0.60')
+      setup[0]['LIBS'] = '-lcrypt'
+    end
 
     command = [*setup, "./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("configure", srcdir, command, prefix)

@@ -1,0 +1,11 @@
+--- gnuglob.c-	2014-12-26 01:07:03.086622263 +0900
++++ gnuglob.c	2014-12-26 01:07:05.366613221 +0900
+@@ -38,7 +38,7 @@
+ #  endif /* !HAVE_DIRENT_H */
+ #endif /* !SHELL && (_POSIX_VERSION || USGr3) */
+ 
+-#if defined (HAVE_DIRENT_H)
++#if defined (DIRENT)
+ #  include <dirent.h>
+ #  if !defined (direct)
+ #    define direct dirent
