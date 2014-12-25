@@ -1,0 +1,10 @@
+--- time.c-	2014-12-26 01:27:00.298024340 +0900
++++ time.c	2014-12-26 01:27:07.305998535 +0900
+@@ -14,6 +14,7 @@
+ #include <sys/types.h>
+ #include <sys/time.h>
+ #include <sys/times.h>
++#include <time.h>
+ 
+ static VALUE C_Time;
+ extern VALUE M_Comparable;

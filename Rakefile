@@ -390,10 +390,14 @@ class RubySource
         content
       }
     end
-    if local_version_le('0.76')
+    if local_version_le('0.49')
+      patch srcdir, 'struct-va_end2'
+    elsif local_version_le('0.76')
       patch srcdir, 'struct-va_end'
     end
-    if local_version_le('0.76')
+    if local_version_le('0.49')
+      patch srcdir, 'time-time2'
+    elsif local_version_le('0.76')
       patch srcdir, 'time-time'
     end
     if version_eq('0.73')

@@ -1,0 +1,11 @@
+--- struct.c-	2014-12-26 01:25:39.946326530 +0900
++++ struct.c	2014-12-26 01:25:49.302290640 +0900
+@@ -99,7 +99,7 @@
+ 	struct_add(st, mem, va_arg(args, VALUE));
+     }
+ 
+-    va_end(vargs);
++    va_end(args);
+     GC_UNLINK;
+ 
+     return st;
