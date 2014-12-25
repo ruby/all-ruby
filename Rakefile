@@ -408,6 +408,8 @@ class RubySource
     raise "gcc not found." if !gcc
 
     FileUtils.mkpath "#{prefix}/bin"
+    FileUtils.mkpath "#{prefix}/man/man1"
+
     File.open("#{prefix}/bin/gcc", "w") {|f|
       f.puts "#!/bin/sh"
       f.puts "#{gcc} -m32 \"$@\""
