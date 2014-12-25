@@ -324,9 +324,6 @@ class RubySource
     if local_version_le('0.95')
       patch srcdir, 'glob-alloca2'
     end
-    if local_version_le('0.95')
-      patch srcdir, 'glob-alloca2'
-    end
     if version_eq('0.95')
       patch srcdir, 'ruby-errno'
     end
@@ -400,8 +397,11 @@ class RubySource
     if local_version_le('0.69')
       patch srcdir, 'defines-nodbm'
     end
-    if local_version_le('0.69')
+    if version_eq('0.69')
       patch srcdir, 'regex-re_match_2'
+    end
+    if local_version_le('0.65')
+      patch srcdir, 'gnuglob-alloca'
     end
     if global_version_lt('1.8.0')
       :build_ruby32

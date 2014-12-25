@@ -1,0 +1,11 @@
+--- gnuglob.c-	2014-12-26 01:02:06.047805261 +0900
++++ gnuglob.c	2014-12-26 01:02:14.111773139 +0900
+@@ -88,7 +88,7 @@
+ #  endif /* !RISC6000 */
+ #endif /* USG */
+ 
+-#if defined(HAVE_ALLOCA_H) && !defined(__GNUC__)
++#if defined(HAVE_ALLOCA_H)
+ #include <alloca.h>
+ #else
+ char *alloca ();
