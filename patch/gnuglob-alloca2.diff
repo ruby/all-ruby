@@ -1,0 +1,11 @@
+--- gnuglob.c-	2014-12-26 01:18:59.871840717 +0900
++++ gnuglob.c	2014-12-26 01:19:36.247700831 +0900
+@@ -89,7 +89,7 @@
+ #if defined(sparc) && !defined(__GNUC__)
+ #include <alloca.h>
+ #else
+-char *alloca ();
++#include <alloca.h>
+ #endif
+ 
+ #include "fnmatch.h"

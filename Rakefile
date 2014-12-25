@@ -383,7 +383,9 @@ class RubySource
     end
     if local_version_le('0.76')
       modify_file("#{dirname}/#{srcdir}/io.c") {|content|
-        content.gsub(/ifdef _other_gbase/, "ifdef _IO_fpos_t")
+        content.gsub!(/->_gptr/, "->_IO_read_ptr")
+        content.gsub!(/->_egptr/, "->_IO_read_end")
+        content
       }
     end
     if local_version_le('0.76')
@@ -401,7 +403,9 @@ class RubySource
     if version_eq('0.69')
       patch srcdir, 'regex-re_match_2'
     end
-    if local_version_le('0.65')
+    if local_version_le('0.54')
+      patch srcdir, 'gnuglob-alloca2'
+    elsif local_version_le('0.65')
       patch srcdir, 'gnuglob-alloca'
     end
     if local_version_le('0.60')
