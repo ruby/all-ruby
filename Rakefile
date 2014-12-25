@@ -395,6 +395,9 @@ class RubySource
     if local_version_le('0.73-950413')
       patch srcdir, 'io-field2'
     end
+    if local_version_le('0.73')
+      patch srcdir, 'makefile-assoc'
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else

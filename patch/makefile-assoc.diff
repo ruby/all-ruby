@@ -1,0 +1,11 @@
+--- Makefile.in-	2014-12-26 00:37:19.512781468 +0900
++++ Makefile.in	2014-12-26 00:37:26.868757961 +0900
+@@ -29,7 +29,7 @@
+ 		bignum.o \
+ 		class.o \
+ 		compar.o \
+-		cons.o \
++		assoc.o \
+ 		dir.o \
+ 		dln.o \
+ 		enum.o \
