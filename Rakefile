@@ -334,6 +334,9 @@ class RubySource
       src.gsub!(/default:\n( *\})/) { "default: break;\n#{$1}" }
       File.write(parse_y_fn, src)
     end
+    if version_eq('1.1b7')
+      patch srcdir, 'parse-semicolon'
+    end
     if version_eq('1.1a4')
       patch srcdir, 'variable-break'
     end
@@ -499,6 +502,7 @@ task :list do
 end
 
 multitask :all => RubySource::TABLE.map {|h| h[:version] }.reverse
+task :allseq => RubySource::TABLE.map {|h| h[:version] }.reverse
 
 RubySource::TABLE.each {|h|
   source = RubySource.new(h[:version])
