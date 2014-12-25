@@ -281,6 +281,16 @@ class RubySource
     return false if !run_command("patch-#{name}", srcdir, command, prefix)
   end
 
+  def modify_file(fn)
+    content0 = File.read(fn)
+    content = content0.dup
+    content = yield content
+    if content != content0
+      File.write("#{fn}.org", content0)
+      File.write(fn, content)
+    end
+  end
+
   def apply_workaround(srcdir)
     unless global_version_ge('1.9.3-p0') ||
            local_version_ge('1.9.2-p290') ||
@@ -317,18 +327,21 @@ class RubySource
     if local_version_le('0.95')
       patch srcdir, 'glob-alloca2'
     end
-    if local_version_le('0.95')
+    if version_eq('0.95')
       patch srcdir, 'ruby-errno'
     end
     if local_version_le('0.95')
-      configure_fn = "#{dirname}/#{srcdir}/configure"
-      content0 = File.read(configure_fn)
-      content = content0.dup
-      content.gsub!(/LDSHARED='ld'/, "LDSHARED='gcc -shared'")
-      if content != content0
-        File.write("#{configure_fn}.org", content0)
-        File.write(configure_fn, content)
-      end
+      modify_file("#{dirname}/#{srcdir}/configure") {|content|
+        content.gsub(/LDSHARED='ld'/, "LDSHARED='gcc -shared'")
+      }
+    end
+    if local_version_le('0.76')
+      patch srcdir, 'ruby-errno2'
+    end
+    if local_version_le('0.76')
+      modify_file("#{dirname}/#{srcdir}/configure") {|content|
+        content.gsub(/^pow\(\)/, "pow(1.0, 1.0)")
+      }
     end
     parse_y_fn = "#{dirname}/#{srcdir}/parse.y"
     if File.file?(parse_y_fn)
