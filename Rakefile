@@ -316,6 +316,9 @@ class RubySource
     if version_eq('1.1d0')
       patch srcdir, 'extmk-heredoc'
     end
+    if version_eq('1.1b9_07')
+      patch srcdir, 'instruby-dll'
+    end
     if local_version_ge('0.99.4-961224') ||
        global_version_eq('1.1a0') ||
        local_version_le('1.1b9_19')

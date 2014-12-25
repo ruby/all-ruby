@@ -1,0 +1,11 @@
+--- instruby.rb-	2014-12-26 02:58:56.171347254 +0900
++++ instruby.rb	2014-12-26 02:59:01.883324962 +0900
+@@ -20,7 +20,7 @@
+ 
+ File.install "ruby#{binsuffix}",
+   "#{bindir}/#{ruby_install_name}#{binsuffix}", 0755, TRUE
+-File.install "rubygw32.dll", "#{bindir}/rubygw32.dll", 0755, TRUE
++#File.install "rubygw32.dll", "#{bindir}/rubygw32.dll", 0755, TRUE
+ File.makedirs libdir, TRUE
+ Dir.chdir "ext"
+ system "../miniruby#{binsuffix} extmk.rb install"
