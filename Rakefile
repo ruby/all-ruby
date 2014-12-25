@@ -378,7 +378,9 @@ class RubySource
     if version_eq('1.1a4')
       patch srcdir, 'variable-break'
     end
-    if local_version_le('0.76')
+    if local_version_le('0.50')
+      patch srcdir, 'error-error2'
+    elsif local_version_le('0.76')
       patch srcdir, 'error-error'
     end
     if local_version_le('0.76')
