@@ -1,0 +1,11 @@
+--- struct.c-	2014-12-25 23:02:08.618786407 +0900
++++ struct.c	2014-12-25 23:02:14.886774868 +0900
+@@ -96,7 +96,7 @@
+     while (mem = va_arg(args, char*)) {
+ 	struct_add(st, mem, va_arg(args, VALUE));
+     }
+-    va_end(vargs);
++    va_end(args);
+ 
+     return st;
+ }

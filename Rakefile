@@ -334,6 +334,21 @@ class RubySource
     if version_eq('1.1a4')
       patch srcdir, 'variable-break'
     end
+    if local_version_le('0.76')
+      patch srcdir, 'error-error'
+    end
+    if version_eq('0.76')
+      patch srcdir, 'io-field'
+    end
+    if local_version_le('0.76')
+      patch srcdir, 'struct-va_end'
+    end
+    if local_version_le('0.76')
+      patch srcdir, 'time-time'
+    end
+    if local_version_le('0.73-950413')
+      patch srcdir, 'io-field2'
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else

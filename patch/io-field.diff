@@ -1,0 +1,11 @@
+--- io.c-	2014-12-25 22:59:19.571095032 +0900
++++ io.c	2014-12-25 22:59:32.703071144 +0900
+@@ -945,7 +945,7 @@
+ struct timeval *time_timeval();
+ 
+ #ifdef _STDIO_USES_IOSTREAM  /* GNU libc */
+-#  ifdef _other_gbase
++#  ifdef _IO_fpos_t
+ #    define READ_DATA_PENDING(fp) ((fp)->_IO_read_ptr < (fp)->_IO_read_end)
+ #  else
+ #    define READ_DATA_PENDING(fp) ((fp)->_gptr < (fp)->_egptr)
