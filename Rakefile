@@ -168,11 +168,14 @@ class RubySource
     filename = File.realpath(filename)
     FileUtils.mkpath dirname
     ary = Dir.glob("#{dirname}/*/ruby.c")
-    if ary.empty?
-      # Assume recent GNU tar which recognize compression automatically.
-      system "tar", "xf", filename, :chdir => dirname
-      ary = Dir.glob("#{dirname}/*/ruby.c")
+    if !ary.empty?
+      ary.each {|fn|
+        FileUtils.rmtree File.dirname(fn)
+      }
     end
+    # Assume recent GNU tar which recognize compression automatically.
+    system "tar", "xf", filename, :chdir => dirname
+    ary = Dir.glob("#{dirname}/*/ruby.c")
     if ary.empty?
       raise "no ruby.c found."
     end
