@@ -306,8 +306,29 @@ class RubySource
     if version_eq('1.1d0')
       patch srcdir, 'extmk-heredoc'
     end
-    if global_version_lt('1.1b0') || local_version_le('1.1b9_19')
+    if local_version_ge('0.99.4-961224') ||
+       global_version_eq('1.1a0') ||
+       local_version_le('1.1b9_19')
       patch srcdir, 'glob-alloca'
+    end
+    if local_version_le('0.95')
+      patch srcdir, 'glob-alloca2'
+    end
+    if local_version_le('0.95')
+      patch srcdir, 'glob-alloca2'
+    end
+    if local_version_le('0.95')
+      patch srcdir, 'ruby-errno'
+    end
+    if local_version_le('0.95')
+      configure_fn = "#{dirname}/#{srcdir}/configure"
+      content0 = File.read(configure_fn)
+      content = content0.dup
+      content.gsub!(/LDSHARED='ld'/, "LDSHARED='gcc -shared'")
+      if content != content0
+        File.write("#{configure_fn}.org", content0)
+        File.write(configure_fn, content)
+      end
     end
     parse_y_fn = "#{dirname}/#{srcdir}/parse.y"
     if File.file?(parse_y_fn)

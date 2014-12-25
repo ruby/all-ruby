@@ -1,0 +1,11 @@
+--- glob.c-	2014-12-26 00:00:27.631756439 +0900
++++ glob.c	2014-12-26 00:00:39.095728098 +0900
+@@ -70,7 +70,7 @@
+ 
+ # define bcopy(s, d, n) (memcpy ((d), (s), (n)))
+ 
+-#if defined(HAVE_ALLOCA_H) && !defined(__GNUC__)
++#if defined(HAVE_ALLOCA_H)
+ #include <alloca.h>
+ #else
+ char *alloca ();
