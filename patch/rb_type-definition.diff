@@ -1,0 +1,18 @@
+--- object.c-	2014-12-25 23:48:15.061632400 +0900
++++ object.c	2014-12-25 23:48:24.097608082 +0900
+@@ -775,7 +775,6 @@
+     return RBASIC(obj)->class;
+ }
+ 
+-#if !defined(__GNUC__) || __GNUC__ < 2
+ int
+ rb_type(obj)
+     VALUE obj;
+@@ -806,7 +805,6 @@
+ {
+     return (v != Qnil) && (v != FALSE);
+ }
+-#endif
+ 
+ VALUE TopSelf;
+ 
