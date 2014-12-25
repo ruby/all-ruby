@@ -334,6 +334,9 @@ class RubySource
       src.gsub!(/default:\n( *\})/) { "default: break;\n#{$1}" }
       File.write(parse_y_fn, src)
     end
+    if version_eq('1.1a4')
+      patch srcdir, 'variable-break'
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else
