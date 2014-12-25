@@ -303,7 +303,7 @@ class RubySource
     if version_eq('1.1d0')
       patch srcdir, 'extmk-heredoc'
     end
-    if local_version_le('1.1b9_19')
+    if global_version_lt('1.1b0') || local_version_le('1.1b9_19')
       patch srcdir, 'glob-alloca'
     end
     if version_eq('1.0-971225')
@@ -326,7 +326,7 @@ class RubySource
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
-    if local_version_lt('1.1b9_19')
+    if global_version_lt('1.1b0') || local_version_lt('1.1b9_19')
       convert_varargs_to_stdarg "#{dirname}/#{srcdir}"
     end
     if local_version_between('1.1b9_05', '1.1b9_09')
@@ -379,14 +379,16 @@ class RubySource
       File.write(fn, src)
     }
     %w[intern.h ruby.h].each {|header|
-      h = File.read("#{dir}/#{header}")
-      File.write("#{dir}/#{header}.org", h)
+      fn = "#{dir}/#{header}"
+      next unless File.file? fn
+      h = File.read(fn)
+      File.write("#{fn}.org", h)
       funcs.each {|func, stdarg_decl|
         h.gsub!(/ #{func}\(\);/) { " #{stdarg_decl};" }
       }
       h.gsub!(/^\#ifdef __GNUC__\ntypedef void voidfn/, "\#if 0\ntypedef void voidfn")
       h.gsub!(/^\#ifdef __GNUC__\nvolatile voidfn/, "\#if 0\nvolatile voidfn")
-      File.write("#{dir}/#{header}", h)
+      File.write(fn, h)
     }
   end
 
@@ -408,6 +410,7 @@ class RubySource
     raise "gcc not found." if !gcc
 
     FileUtils.mkpath "#{prefix}/bin"
+    FileUtils.mkpath "#{prefix}/lib"
     FileUtils.mkpath "#{prefix}/man/man1"
 
     File.open("#{prefix}/bin/gcc", "w") {|f|
