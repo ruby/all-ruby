@@ -306,9 +306,6 @@ class RubySource
     if global_version_lt('1.1b0') || local_version_le('1.1b9_19')
       patch srcdir, 'glob-alloca'
     end
-    if version_eq('1.0-971225')
-      patch srcdir, 'varargs'
-    end
     parse_y_fn = "#{dirname}/#{srcdir}/parse.y"
     if File.file?(parse_y_fn)
       parse_y_orig = File.read(parse_y_fn)
