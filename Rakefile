@@ -324,16 +324,17 @@ class RubySource
     if local_version_le('0.95')
       patch srcdir, 'glob-alloca2'
     end
-    if version_eq('0.95')
+    if local_version_le('0.55')
+      patch srcdir, 'ruby-errno3'
+    elsif local_version_le('0.76')
+      patch srcdir, 'ruby-errno2'
+    elsif version_eq('0.95')
       patch srcdir, 'ruby-errno'
     end
     if local_version_le('0.95')
       modify_file("#{dirname}/#{srcdir}/configure") {|content|
         content.gsub(/LDSHARED='ld'/, "LDSHARED='gcc -shared'")
       }
-    end
-    if local_version_le('0.76')
-      patch srcdir, 'ruby-errno2'
     end
     if local_version_le('0.76')
       modify_file("#{dirname}/#{srcdir}/configure") {|content|

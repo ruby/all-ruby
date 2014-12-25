@@ -1,0 +1,11 @@
+--- ruby.h-	2014-12-26 01:13:31.401102794 +0900
++++ ruby.h	2014-12-26 01:13:41.033065788 +0900
+@@ -13,6 +13,8 @@
+ #ifndef RUBY_H
+ #define RUBY_H
+ 
++#include <errno.h>
++
+ #include "defines.h"
+ 
+ #ifdef __STDC__
