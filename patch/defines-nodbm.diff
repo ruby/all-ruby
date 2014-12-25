@@ -1,0 +1,11 @@
+--- defines.h-	2014-12-26 00:51:57.213845599 +0900
++++ defines.h	2014-12-26 00:51:59.445837396 +0900
+@@ -28,7 +28,7 @@
+ #endif
+ 
+ /* define USE_DBM to use dbm class. */
+-#define USE_DBM
++/* #define USE_DBM */
+ 
+ #define SAFE_SIGHANDLE
+ 

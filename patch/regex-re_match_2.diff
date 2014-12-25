@@ -1,0 +1,11 @@
+--- regex.c-	2014-12-26 00:51:48.949872931 +0900
++++ regex.c	2014-12-26 00:51:52.145861358 +0900
+@@ -1901,7 +1901,7 @@
+      int size, pos;
+      struct re_registers *regs;
+ {
+-  return re_match_2 (pbufp, (char *) 0, 0, string, size, pos, regs, size); 
++  return re_match_2 (pbufp, (char *) 0, 0, string, size, pos, regs); 
+ }
+ 
+ 

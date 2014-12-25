@@ -398,6 +398,12 @@ class RubySource
     if version_eq('0.73')
       patch srcdir, 'makefile-assoc'
     end
+    if local_version_le('0.69')
+      patch srcdir, 'defines-nodbm'
+    end
+    if local_version_le('0.69')
+      patch srcdir, 'regex-re_match_2'
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else
@@ -487,11 +493,13 @@ class RubySource
     FileUtils.mkpath "#{prefix}/lib"
     FileUtils.mkpath "#{prefix}/man/man1"
 
-    File.open("#{prefix}/bin/gcc", "w") {|f|
-      f.puts "#!/bin/sh"
-      f.puts "#{gcc} -m32 \"$@\""
+    %w[gcc cc].each {|cc_bin|
+      File.open("#{prefix}/bin/#{cc_bin}", "w") {|f|
+        f.puts "#!/bin/sh"
+        f.puts "#{gcc} -m32 \"$@\""
+      }
+      File.chmod(0755, "#{prefix}/bin/#{cc_bin}")
     }
-    File.chmod(0755, "#{prefix}/bin/gcc")
 
     setup = [{'CFLAGS'=>'-g -O0',
               'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
