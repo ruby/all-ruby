@@ -1,0 +1,33 @@
+--- ext/tcltklib/extconf.rb	1997-10-28 18:54:19.000000000 +0900
++++ ext/tcltklib/extconf.rb	1997-12-09 00:43:08.000000000 +0900
+@@ -46,14 +46,18 @@
+ 			 "libtcl{,7*,8*}.{a,so}",
+ 			 "/usr/lib",
+ 			 "/usr/local/lib")
+-tcllibfile.sub!(/^lib/, '')
+-tcllibfile.sub!(/\.(a|so)$/, '')
++if tcllibfile
++  tcllibfile.sub!(/^lib/, '')
++  tcllibfile.sub!(/\.(a|so)$/, '')
++end
+ tklibfile =  search_file($libraries,
+ 			 "libtk{,4*,8*}.{a,so}",
+ 			 "/usr/lib",
+ 			 "/usr/local/lib")
+-tklibfile.sub!(/^lib/, '')
+-tklibfile.sub!(/\.(a|so)$/, '')
++if tklibfile
++  tklibfile.sub!(/^lib/, '')
++  tklibfile.sub!(/\.(a|so)$/, '')
++end
+ search_file($libraries,
+ 	    "libX11.{a,so}",
+ 	    "/usr/lib",
+@@ -67,6 +71,6 @@
+     have_library("X11", "XOpenDisplay") &&
+     have_library("m", "log") &&
+     have_library(tcllibfile, "Tcl_FindExecutable") &&
+-    have_library(tklibfile, "Tk_Init") &&
++    have_library(tklibfile, "Tk_Init")
+   create_makefile("tcltklib")
+ end

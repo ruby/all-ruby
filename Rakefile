@@ -340,6 +340,9 @@ class RubySource
     if version_eq('1.1b3')
       patch srcdir, 'rb_type-definition'
     end
+    if version_eq('1.1b0')
+      patch srcdir, 'tcltklib-extconf'
+    end
     if version_eq('1.1a4')
       patch srcdir, 'variable-break'
     end
