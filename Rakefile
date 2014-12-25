@@ -326,11 +326,63 @@ class RubySource
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
+    if local_version_lt('1.1b9_19')
+      convert_varargs_to_stdarg "#{dirname}/#{srcdir}"
+    end
     if global_version_lt('1.8.0')
       :build_ruby32
     else
       :build_ruby
     end
+  end
+
+  def convert_varargs_to_stdarg(dir)
+    funcs = {}
+    Dir.glob("#{dir}/*.c").each {|fn|
+      src = File.read(fn)
+      next if /^\#include <stdarg\.h>\n/ =~ src
+      next if /^\#include <varargs\.h>\n/ !~ src
+      File.write("#{fn}.org", src)
+      src.gsub!(/^#include <varargs.h>\n/, <<-End.gsub(/^\s*/, ''))
+        #ifdef __STDC__
+        #include <stdarg.h>
+        #define va_init_list(a,b) va_start(a,b)
+        #else
+        #include <varargs.h>
+        #define va_init_list(a,b) va_start(a)
+        #endif
+      End
+      src.gsub!(/^([A-Za-z][A-Za-z0-9_]*)\((.*), va_alist\)\n(( .*;\n)*)( +va_dcl\n)(\{.*\n(.*\n)*?\})/) {
+
+        func = $1
+        fargs = $2
+        decls = $3
+        body = $6
+        stdarg_decl = "#{func}(#{decls.gsub(/^ +|\n/, '').gsub(/;/, ',')} ...)"
+        funcs[func] = stdarg_decl
+        lastarg = stdarg_decl.scan(/[a-z_][a-z_0-9]*/)[-1]
+        body.gsub!(/va_start\(([a-z]+)\)/) { "va_init_list(#{$1}, #{lastarg})" }
+        stdarg_decl + "\n" + body
+      }
+      if fn == "#{dir}/error.c"
+        src.gsub!(/^extern void TypeError\(\);/, '/* extern void TypeError(); */')
+        src.gsub!(/^ *void ArgError\(\);/, '/* void ArgError(); */')
+        src.gsub!(/va_start\(args\);/, 'va_start(args, fmt);')
+      end
+      src.gsub!(/^\#ifdef __GNUC__\nstatic volatile voidfn/, "\#if 0\nstatic volatile voidfn")
+      File.write("#{fn}+", src)
+      File.write(fn, src)
+    }
+    %w[intern.h ruby.h].each {|header|
+      h = File.read("#{dir}/#{header}")
+      File.write("#{dir}/#{header}.org", h)
+      funcs.each {|func, stdarg_decl|
+        h.gsub!(/ #{func}\(\);/) { " #{stdarg_decl};" }
+      }
+      h.gsub!(/^\#ifdef __GNUC__\ntypedef void voidfn/, "\#if 0\ntypedef void voidfn")
+      h.gsub!(/^\#ifdef __GNUC__\nvolatile voidfn/, "\#if 0\nvolatile voidfn")
+      File.write("#{dir}/#{header}", h)
+    }
   end
 
   def which(command)
