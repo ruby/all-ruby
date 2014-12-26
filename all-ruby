@@ -30,24 +30,34 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+VERSION_WORD_NUMBER = {
+  'ruby' => 0,
+  'preview' => -2,
+  'rc' => -1,
+  'p' => 1,
+  'a' => 1,
+  'b' => 2,
+  'c' => 3,
+  'd' => 4,
+  'repack' => 1,
+}
+
 def parse_name(n)
   return nil if /\Aruby-[0-9]/ !~ n
   ary = []
-  n.scan(/\d+|[a-z]+|./m) {
-    str = $&
-    case str
-    when 'preview'
-      ary << "A"
-    when 'rc'
-      ary << "B"
-    when 'p'
-      ary << "C"
+  n.scan(/(\d+)|[a-z]+/m) {
+    if $1
+      ary << $1.to_i
+    else
+      n = VERSION_WORD_NUMBER[$&]
+      if n
+        ary << n
+      else
+        warn "unexpected word: #{$&.inspect}"
+      end
     end
-    if /\A\d+\z/ =~ str
-      str = str.rjust(100, '0')
-    end
-    ary << str
   }
+  10.times { ary << 0 }
   ary
 end
 
