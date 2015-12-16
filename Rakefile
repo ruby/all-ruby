@@ -673,6 +673,7 @@ task 'sync' do
     h[:uri].sub(%r{/[^/]*\z}, '/')
   }.uniq
   dirs.reverse_each {|dir|
+    puts dir
     index_html = URI(dir).read
     hs = extract_entries(index_html)
     hs = filter_suffix(hs)
