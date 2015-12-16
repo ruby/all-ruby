@@ -303,7 +303,8 @@
     "2.0/ruby-2.0.0-p598.tar.xz",
     "2.0/ruby-2.0.0-p643.tar.xz",
     "2.0/ruby-2.0.0-p645.tar.xz",
-    "2.0/ruby-2.0.0-p647.tar.xz"
+    "2.0/ruby-2.0.0-p647.tar.xz",
+    "2.0/ruby-2.0.0-p648.tar.xz"
   ],
   [
     "2.1/ruby-2.1.0-preview1.tar.bz2",
@@ -316,7 +317,8 @@
     "2.1/ruby-2.1.4.tar.xz",
     "2.1/ruby-2.1.5.tar.xz",
     "2.1/ruby-2.1.6.tar.xz",
-    "2.1/ruby-2.1.7.tar.xz"
+    "2.1/ruby-2.1.7.tar.xz",
+    "2.1/ruby-2.1.8.tar.xz"
   ],
   [
     "2.2/ruby-2.2.0-preview1.tar.xz",
@@ -325,7 +327,8 @@
     "2.2/ruby-2.2.0.tar.xz",
     "2.2/ruby-2.2.1.tar.xz",
     "2.2/ruby-2.2.2.tar.xz",
-    "2.2/ruby-2.2.3.tar.xz"
+    "2.2/ruby-2.2.3.tar.xz",
+    "2.2/ruby-2.2.4.tar.xz"
   ],
   [
     "2.3/ruby-2.3.0-preview1.tar.xz",
