@@ -103,10 +103,24 @@ def verify_version(n)
   return File.basename(n)
 end
 
+if ARGV.empty?
+  puts <<"End"
+usage: all-ruby RUBY-ARGS
+environments:
+  ALL_RUBY_SINCE=ruby-1.4 all-ruby RUBY-ARGS
+End
+  exit
+end
+
 #p __LINE__
 commands = collect_commands
 #p __LINE__
 commands = sort_by_name(commands)
+
+if ENV['ALL_RUBY_SINCE']
+  version_since = parse_name(ENV['ALL_RUBY_SINCE'])
+  commands.reject! {|n| (parse_name(File.basename(n)) <=> version_since) < 0 }
+end
 
 if File.file?("./ruby") && File.executable?("./ruby")
   commands << "./ruby"
