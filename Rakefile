@@ -52,6 +52,12 @@ require 'fileutils'
 require 'json'
 require 'pp'
 
+def show_help_message
+  puts "\"rake all\" will install #{RubySource::TABLE.length} ruby"
+  puts "\"rake list\" shows versions"
+  puts "\"rake sync\" updates versions.json"
+end
+
 URI_BASE = 'http://cache.ruby-lang.org/pub/ruby/'
 #URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
@@ -564,8 +570,7 @@ class RubySource
 end
 
 task :default do
-  puts "\"rake all\" will install #{RubySource::TABLE.length} ruby"
-  puts "\"rake list\" shows versions"
+  show_help_message
 end
 
 task :list do
