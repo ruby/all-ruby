@@ -111,6 +111,29 @@ class RubySource
     }
   }
 
+  def self.dirs
+    result = RubySource::TABLE.map {|h|
+      h[:uri].sub(%r{/[^/]*\z}, '/')
+    }.uniq
+    case URI_BASE
+    when /\A(http:|https:)/
+      index = URI(URI_BASE).read
+      lst = []
+      index.scan(%r{href="(\d\.\d)/"}) {
+        lst << $1
+      }
+    else
+      raise "unexpected URI_BASE scheme: #{URI_BASE} (http/https required)"
+    end
+    lst.each {|n|
+      uri = URI_BASE + n + "/"
+      next if result.include? uri
+      #puts "New directory found: #{uri}"
+      result << uri
+    }
+    result
+  end
+
   def self.fuzzy_lookup(arg)
     TABLE.each {|h|
       if h[:relpath] == arg ||
@@ -652,7 +675,11 @@ def add_version(versions, relpath)
     }.max
   }
   target_list_index = (0...prefix_length_list.length).max_by {|i| prefix_length_list[i] }
-  versions[target_list_index] << relpath
+  if %r{/} =~ relpath && %r{/} !~ relpath[0, prefix_length_list[target_list_index]]
+    versions << [relpath]
+  else
+    versions[target_list_index] << relpath
+  end
   puts "versions.json : #{relpath} added."
 end
 
@@ -674,9 +701,7 @@ def update_versions(relpath_list)
 end
 
 task 'sync' do
-  dirs = RubySource::TABLE.map {|h|
-    h[:uri].sub(%r{/[^/]*\z}, '/')
-  }.uniq
+  dirs = RubySource.dirs
   dirs.reverse_each {|dir|
     puts dir
     index_html = URI(dir).read
