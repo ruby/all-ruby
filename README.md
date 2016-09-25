@@ -3,16 +3,20 @@
 This software is a script to install histric Ruby versions since ruby-0.49.
 Also, all-ruby script runs all ruby binaries with same arguments.
 
-## Usage
+## Platform
 
-Install 32bit compilation tools to install ruby before version 1.8.0.
-The older ruby doesn't support 64bit environment.
-Debian GNU/Linux 8 (jessie) (amd64) supports these tools as follows.
+This software is developped on Debian GNU/Linux 8 (jessie) amd64.
+
+However Ruby doesn't support 64 bit platform until ruby 1.8.0.
+So, the older ruby needs 32 bit development tools which can be
+installed as follows.
 
     % sudo dpkg --add-architecture i386
     % sudo aptitude install gcc-multilib \
         zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.0:i386 \
         libreadline6:i386 libffi5:i386
+
+## Usage
 
 This software provides Rakefile and "rake all" downloads and builds
 historic ruby versions.
