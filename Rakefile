@@ -58,7 +58,7 @@ def show_help_message
   puts "\"rake sync\" updates versions.json"
 end
 
-URI_BASE = 'http://cache.ruby-lang.org/pub/ruby/'
+URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
 #URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
 def make_entry(relpath)
@@ -711,4 +711,3 @@ task 'sync' do
     update_versions relpath_list
   }
 end
-
