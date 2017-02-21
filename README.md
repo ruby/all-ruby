@@ -1,11 +1,11 @@
 # all-ruby
 
-This software is a script to install histric Ruby versions since ruby-0.49.
+This software is a script to install historic Ruby versions since ruby-0.49.
 Also, all-ruby script runs all ruby binaries with same arguments.
 
 ## Platform
 
-This software is developped on Debian GNU/Linux 8 (jessie) amd64.
+This software is developed on Debian GNU/Linux 8 (jessie) amd64.
 
 However Ruby doesn't support 64 bit platform until ruby 1.8.0.
 So, the older ruby needs 32 bit development tools which can be
