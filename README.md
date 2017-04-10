@@ -12,9 +12,11 @@ So, the older ruby needs 32 bit development tools which can be
 installed as follows.
 
     % sudo dpkg --add-architecture i386
-    % sudo aptitude install gcc-multilib \
+    % sudo apt update
+    % sudo apt-get build-dep ruby2.1
+    % sudo apt install rake gcc-multilib \
         zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.0:i386 \
-        libreadline6:i386 libffi5:i386
+        libreadline6:i386 libffi6:i386
 
 ## Usage
 
