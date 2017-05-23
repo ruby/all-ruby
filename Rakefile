@@ -51,6 +51,7 @@ require 'open-uri'
 require 'fileutils'
 require 'json'
 require 'pp'
+require 'digest'
 
 def show_help_message
   puts "\"rake all\" will install #{RubySource::TABLE.length} ruby"
@@ -710,4 +711,65 @@ task 'sync' do
     relpath_list = hs.map {|h| h[:relpath] }
     update_versions relpath_list
   }
+end
+
+def expand(dir)
+  Dir.open(dir) do |d|
+    return d                        \
+      .to_enum                      \
+      .lazy                         \
+      .grep_v(/\A(\.|\.\.)\z/)      \
+      .sort                         \
+      .reverse_each                 \
+      .map {|i| File.join(dir, i) } \
+      .to_a
+  end
+end
+
+def same?(f1, s1, f2, s2)
+  return false unless s1.dev  == s2.dev
+  return true  if     s1.ino  == s2.ino # hard link already
+  return false unless s1.mode == s2.mode
+  return false unless s1.uid  == s2.uid
+  return false unless s1.gid  == s2.gid
+  return false unless s1.size == s2.size
+  return false unless FileUtils.cmp(f1, f2)
+
+  STDOUT.printf "%s -> %s\n", f1, f2 if $DEBUG
+  FileUtils.link(f1, f2, force: true)
+  return true
+end
+
+def try_dedup(target, stat, files)
+  d = Digest::SHA1.file(target).digest
+rescue SystemCallError
+  # EPERM etc., unable to dedup
+  puts $! if $DEBUG
+else
+  STDOUT.printf "%-.79s \r", target + " " * 80
+  files[d] << [target, stat] unless files[d].any? do |(f, s)|
+    same?(target, stat, f, s)
+  end
+end
+
+task :dedup do
+  targets = RubySource::TABLE.map {|h| h[:version] }
+  files   = Hash.new {|h, k| h[k] = [] }
+  while target = targets.shift do
+    begin
+      stat = File.lstat(target)
+    rescue SystemCallError
+      puts $! if $DEBUG
+      next
+    end
+
+    case stat.ftype
+    when "file"      then try_dedup(target, stat, files)
+    when "directory" then targets.replace expand(target).concat(targets) # recur
+    when "link"      then # OK, already
+    else
+      raise "unknown file type #{stat.ftype} got for: #{target}"
+    end
+  end
+  puts
 end
