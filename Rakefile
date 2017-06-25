@@ -715,10 +715,9 @@ end
 
 def expand(dir)
   Dir.open(dir) do |d|
-    return d                        \
+    return (d.to_a - [".", ".."])   \
       .to_enum                      \
       .lazy                         \
-      .grep_v(/\A(\.|\.\.)\z/)      \
       .sort                         \
       .reverse_each                 \
       .map {|i| File.join(dir, i) } \
