@@ -322,9 +322,8 @@ class RubySource
   end
 
   def apply_workaround(srcdir)
-    unless global_version_ge('1.9.3-p0') ||
-           local_version_ge('1.9.2-p290') ||
-           local_version_ge('1.8.7-p352')
+    unless global_version_ge('2.4.0')
+      # OpenSSL 1.1.0 is supported since Ruby 2.4.0.
       dir = "#{dirname}/#{srcdir}/ext/openssl"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
