@@ -5,7 +5,7 @@ Also, all-ruby script runs all ruby binaries with same arguments.
 
 ## Platform
 
-This software is developed on Debian GNU/Linux 8 (jessie) amd64.
+This software is developed on Debian GNU/Linux 9 (stretch) amd64.
 
 However Ruby doesn't support 64 bit platform until ruby 1.8.0.
 So, the older ruby needs 32 bit development tools which can be
@@ -13,10 +13,10 @@ installed as follows.
 
     % sudo dpkg --add-architecture i386
     % sudo apt update
-    % sudo apt-get build-dep ruby2.1
+    % sudo apt-get build-dep ruby2.3
     % sudo apt install rake gcc-multilib \
-        zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.0:i386 \
-        libreadline6:i386 libffi6:i386
+        zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.2:i386 \
+        libreadline7:i386 libffi6:i386
 
 ## Usage
 
