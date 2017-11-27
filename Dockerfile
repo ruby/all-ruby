@@ -38,6 +38,7 @@ RUN rake 1.9.2-preview1 1.9.2-preview3 1.9.2-rc1 1.9.2-rc2 1.9.2-p0 1.9.2-p136 1
 RUN rake 1.9.3-preview1 1.9.3-rc1 1.9.3-p0 1.9.3-p105 1.9.3-p125 1.9.3-p194 1.9.3-p286 1.9.3-p327 1.9.3-p362 1.9.3-p374 1.9.3-p385 1.9.3-p392 1.9.3-p426 1.9.3-p429 1.9.3-p448 1.9.3-p484 1.9.3-p545 1.9.3-p547 1.9.3-p550 1.9.3-p551 && rm DIST/*
 RUN rake 2.0.0-preview1 2.0.0-preview2 2.0.0-rc1 2.0.0-rc2 2.0.0-p0 2.0.0-p195 2.0.0-p247 2.0.0-p353 2.0.0-p451 2.0.0-p481 2.0.0-p576 2.0.0-p594 2.0.0-p598 2.0.0-p643 2.0.0-p645 2.0.0-p647 2.0.0-p648 && rm DIST/*
 RUN rake 2.1.0-preview1 2.1.0-preview2 2.1.0-rc1 2.1.0 2.1.1 2.1.2 2.1.3 2.1.4 2.1.5 2.1.6 2.1.7 2.1.8 2.1.9 2.1.10 && rm DIST/*
-RUN rake 2.2.0-preview1 2.2.0-preview2 2.2.0-rc1 2.2.0 2.2.1 2.2.2 2.2.3 2.2.4 2.2.5 2.2.6 2.2.7 && rm DIST/*
-RUN rake 2.3.0-preview1 2.3.0-preview2 2.3.0 2.3.1 2.3.2 2.3.3 2.3.4 && rm DIST/*
-RUN rake 2.4.0-preview1 2.4.0-preview2 2.4.0-preview3 2.4.0-rc1 2.4.0 2.4.1 && rm DIST/*
+RUN rake 2.2.0-preview1 2.2.0-preview2 2.2.0-rc1 2.2.0 2.2.1 2.2.2 2.2.3 2.2.4 2.2.5 2.2.6 2.2.7 2.2.8 && rm DIST/*
+RUN rake 2.3.0-preview1 2.3.0-preview2 2.3.0 2.3.1 2.3.2 2.3.3 2.3.4 2.3.5 && rm DIST/*
+RUN rake 2.4.0-preview1 2.4.0-preview2 2.4.0-preview3 2.4.0-rc1 2.4.0 2.4.1 2.4.2 && rm DIST/*
+RUN rake 2.5.0-preview1 && rm DIST/*
