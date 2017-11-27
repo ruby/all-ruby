@@ -179,7 +179,6 @@
     "1.8/ruby-1.8.5-p11.tar.gz",
     "1.8/ruby-1.8.5-p11-repack.tar.gz",
     "1.8/ruby-1.8.5-p35.tar.gz",
-    "1.8/ruby-1.8.6-p36.tar.bz2",
     "1.8/ruby-1.8.5-p52.tar.bz2",
     "1.8/ruby-1.8.5-p113.tar.bz2",
     "1.8/ruby-1.8.5-p114.tar.bz2",
@@ -188,6 +187,7 @@
   ],
   [
     "1.8/ruby-1.8.6.tar.bz2",
+    "1.8/ruby-1.8.6-p36.tar.bz2",
     "1.8/ruby-1.8.6-p110.tar.bz2",
     "1.8/ruby-1.8.6-p111.tar.bz2",
     "1.8/ruby-1.8.6-p114.tar.bz2",
