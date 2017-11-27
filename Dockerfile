@@ -1,4 +1,4 @@
-FROM debian:8
+FROM debian:9
 MAINTAINER SHIBATA Hiroshi hsbt@ruby-lang.org
 
 RUN dpkg --add-architecture i386
@@ -14,8 +14,8 @@ RUN apt-get update -qq && \
     zlib1g:i386 \
     libncurses5:i386 \
     libgdbm3:i386 \
-    libssl1.0.0:i386 \
-    libreadline6:i386 \
+    libssl1.0.2:i386 \
+    libreadline7:i386 \
     libffi6:i386 && \
     rm -rf /var/lib/apt/lists/*
 
