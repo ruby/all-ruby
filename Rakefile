@@ -349,6 +349,7 @@ class RubySource
       patch srcdir, 'instruby-dll'
     end
     if local_version_ge('0.99.4-961224') ||
+       global_version_eq('1.0-961225') ||
        global_version_eq('1.1a0') ||
        local_version_le('1.1b9_19')
       patch srcdir, 'glob-alloca'
@@ -710,6 +711,28 @@ task 'sync' do
     relpath_list = hs.map {|h| h[:relpath] }
     update_versions relpath_list
   }
+end
+
+def longest_common_substring_of ary
+  return ary[0].slice 0, ary.min_by(&:length).length.times {|i|
+    break i if ary.any? {|j|
+      break true if j[i] != ary[0][i]
+    }
+  }
+end
+
+RubySource::TARBALLS.each do |versions|
+  ary = versions.reject {|i| Hash === i }
+  str = longest_common_substring_of ary
+  str.sub!(%r{.+/ruby-}, '')
+  str.sub!(%r{-[\w.]*?$|\.$}, '')
+  ary.map! {|v| hashize_version_entry(v) }
+  ary.map! {|h| h[:relpath] }
+  ary.map! {|r| make_entry(r) }
+  ary.map! {|h| h[:version] }
+  ary.reverse!
+  multitask "all-#{str}" => ary
+  task "allseq-#{str}" => ary
 end
 
 def expand(dir)
