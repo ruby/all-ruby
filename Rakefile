@@ -541,7 +541,7 @@ class RubySource
     %w[gcc cc].each {|cc_bin|
       File.open("#{prefix}/bin/#{cc_bin}", "w") {|f|
         f.puts "#!/bin/sh"
-        f.puts "#{gcc} -m32 \"$@\""
+        f.puts "#{gcc} -m32 -std=gnu89 \"$@\""
       }
       File.chmod(0755, "#{prefix}/bin/#{cc_bin}")
     }
