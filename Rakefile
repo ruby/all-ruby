@@ -744,7 +744,7 @@ rescue SystemCallError
   # EPERM etc., unable to dedup
   puts $! if $DEBUG
 else
-  STDOUT.printf "%-.79s \r", target + " " * 80
+  STDOUT.printf "%-.79s \r", target + " " * 80 if $VERBOSE and $STDOUT.isatty
   files[d] << [target, stat] unless files[d].any? do |(f, s)|
     same?(target, stat, f, s)
   end
