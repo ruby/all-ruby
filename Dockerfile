@@ -15,7 +15,6 @@ ARG version
 RUN echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list
 RUN echo $'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot
 RUN echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache
-RUN echo 'Acquire::HTTP::Proxy "http://172.17.0.1:3142";' > /etc/apt/apt.conf.d/99proxy
 RUN apt-get update
 RUN apt-get install build-essential
 RUN apt-get install gcc-multilib
