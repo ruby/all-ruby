@@ -334,7 +334,8 @@
     "2.2/ruby-2.2.5.tar.xz",
     "2.2/ruby-2.2.6.tar.xz",
     "2.2/ruby-2.2.7.tar.xz",
-    "2.2/ruby-2.2.8.tar.xz"
+    "2.2/ruby-2.2.8.tar.xz",
+    "2.2/ruby-2.2.9.tar.xz"
   ],
   [
     "2.3/ruby-2.3.0-preview1.tar.xz",
@@ -344,7 +345,8 @@
     "2.3/ruby-2.3.2.tar.xz",
     "2.3/ruby-2.3.3.tar.xz",
     "2.3/ruby-2.3.4.tar.xz",
-    "2.3/ruby-2.3.5.tar.xz"
+    "2.3/ruby-2.3.5.tar.xz",
+    "2.3/ruby-2.3.6.tar.xz"
   ],
   [
     "2.4/ruby-2.4.0-preview1.tar.xz",
@@ -353,9 +355,11 @@
     "2.4/ruby-2.4.0-rc1.tar.xz",
     "2.4/ruby-2.4.0.tar.xz",
     "2.4/ruby-2.4.1.tar.xz",
-    "2.4/ruby-2.4.2.tar.xz"
+    "2.4/ruby-2.4.2.tar.xz",
+    "2.4/ruby-2.4.3.tar.xz"
   ],
   [
-    "2.5/ruby-2.5.0-preview1.tar.xz"
+    "2.5/ruby-2.5.0-preview1.tar.xz",
+    "2.5/ruby-2.5.0-rc1.tar.xz"
   ]
 ]
