@@ -1,5 +1,4 @@
 FROM debian:9
-MAINTAINER SHIBATA Hiroshi hsbt@ruby-lang.org
 
 RUN dpkg --add-architecture i386
 RUN apt-get update -qq && \
