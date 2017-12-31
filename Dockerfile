@@ -41,4 +41,4 @@ RUN rake 2.1.0-preview1 2.1.0-preview2 2.1.0-rc1 2.1.0 2.1.1 2.1.2 2.1.3 2.1.4 2
 RUN rake 2.2.0-preview1 2.2.0-preview2 2.2.0-rc1 2.2.0 2.2.1 2.2.2 2.2.3 2.2.4 2.2.5 2.2.6 2.2.7 2.2.8 && rm DIST/*
 RUN rake 2.3.0-preview1 2.3.0-preview2 2.3.0 2.3.1 2.3.2 2.3.3 2.3.4 2.3.5 && rm DIST/*
 RUN rake 2.4.0-preview1 2.4.0-preview2 2.4.0-preview3 2.4.0-rc1 2.4.0 2.4.1 2.4.2 && rm DIST/*
-RUN rake 2.5.0-preview1 && rm DIST/*
+RUN rake 2.5.0-preview1 2.5.0-rc1 2.5.0 && rm DIST/*
