@@ -6,7 +6,6 @@ ARG system_ruby=ruby2.3
 ARG j=1
 
 FROM ${os}:${version}${variant}
-MAINTAINER shyouhei@ruby-lang.org
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386
