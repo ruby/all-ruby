@@ -3,7 +3,6 @@ ARG version=stretch
 ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
 ARG system_ruby=ruby2.3
-ARG j=1
 
 FROM ${os}:${version}${variant}
 
@@ -31,7 +30,7 @@ ADD Rakefile all-ruby versions.json /all-ruby/
 ADD patch /all-ruby/patch/
 WORKDIR /all-ruby
 
-ARG j
+ARG j=1
 RUN rake -j ${j} all-0     && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 0*
 RUN rake -j ${j} all-1.0   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 1.0*
 RUN rake -j ${j} all-1.1a  && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 1.1a*
