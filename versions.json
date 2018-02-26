@@ -364,5 +364,8 @@
     "2.5/ruby-2.5.0-preview1.tar.xz",
     "2.5/ruby-2.5.0-rc1.tar.xz",
     "2.5/ruby-2.5.0.tar.xz"
+  ],
+  [
+    "2.6/ruby-2.6.0-preview1.tar.xz"
   ]
 ]
