@@ -54,4 +54,5 @@ RUN rake -j ${j} all-2.2   && rm -rf DIST */log */ruby*/ && rdfind -makehardlink
 RUN rake -j ${j} all-2.3   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.3*
 RUN rake -j ${j} all-2.4   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.4*
 RUN rake -j ${j} all-2.5   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.5*
-RUN rake -j ${j} all-2.6   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.5*
+RUN rake 2.6.0-preview1    && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.6*
+
