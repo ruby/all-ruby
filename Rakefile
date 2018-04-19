@@ -557,17 +557,17 @@ class RubySource
 
     command = [*setup, "./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("configure", command, prefix)
-      raise "fail configure #{srcdir}"
+      raise "fail configure #{version}"
     end
 
     command = [*setup, "make", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("make", command, prefix)
-      raise "fail make #{srcdir}"
+      raise "fail make #{version}"
     end
 
     command = [*setup, "make", "install", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("install", command, prefix)
-      raise "fail install #{srcdir}"
+      raise "fail install #{version}"
     end
   end
 
@@ -577,17 +577,17 @@ class RubySource
 
     command = ["./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("configure", command, prefix)
-      raise "fail configure #{srcdir}"
+      raise "fail configure #{version}"
     end
 
     command = ["make", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("make", command, prefix)
-      raise "fail make #{srcdir}"
+      raise "fail make #{version}"
     end
 
     command = ["make", "install", :chdir => "#{dirname}/#{srcdir}"]
     if !run_command("install", command, prefix)
-      raise "fail install #{srcdir}"
+      raise "fail install #{version}"
     end
   end
 
