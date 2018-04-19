@@ -285,11 +285,11 @@ class RubySource
     ret >= 0
   end
 
-  def run_command(tag, srcdir, command, prefixdir)
+  def run_command(tag, command, prefixdir)
     FileUtils.mkpath "#{prefixdir}/log"
     log_fn = "#{prefixdir}/log/#{tag}.txt"
     status_fn = "#{prefixdir}/log/#{tag}.status"
-    print "#{tag} #{srcdir}\n"
+    print "#{tag} #{version}\n"
     if command.last.kind_of? Hash
       opt = command.last.dup
       command = command[0...-1]
@@ -300,7 +300,7 @@ class RubySource
     system(*command, opt)
     status = $?
     open(status_fn, "w") {|f| f.puts status.to_s.sub(/\Apid \d+ /, '') }
-    print "fail #{tag} #{srcdir}\n" if !status.success?
+    print "fail #{tag} #{version}\n" if !status.success?
     status.success?
   end
 
@@ -308,7 +308,7 @@ class RubySource
     prefix = File.realpath(dirname)
     patch = File.realpath("patch/#{name}.diff")
     command = ["patch", "-p0", :in => patch, :chdir => "#{dirname}/#{srcdir}"]
-    return false if !run_command("patch-#{name}", srcdir, command, prefix)
+    return false if !run_command("patch-#{name}", command, prefix)
   end
 
   def modify_file(fn)
@@ -530,7 +530,7 @@ class RubySource
 
   def build_ruby32(srcdir)
     prefix = File.realpath(dirname)
-    print "build #{srcdir}\n"
+    print "build #{version}\n"
 
     gcc = which('gcc')
     raise "gcc not found." if !gcc
@@ -556,37 +556,37 @@ class RubySource
     end
 
     command = [*setup, "./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
-    if !run_command("configure", srcdir, command, prefix)
+    if !run_command("configure", command, prefix)
       raise "fail configure #{srcdir}"
     end
 
     command = [*setup, "make", :chdir => "#{dirname}/#{srcdir}"]
-    if !run_command("make", srcdir, command, prefix)
+    if !run_command("make", command, prefix)
       raise "fail make #{srcdir}"
     end
 
     command = [*setup, "make", "install", :chdir => "#{dirname}/#{srcdir}"]
-    if !run_command("install", srcdir, command, prefix)
+    if !run_command("install", command, prefix)
       raise "fail install #{srcdir}"
     end
   end
 
   def build_ruby(srcdir)
     prefix = File.realpath(dirname)
-    print "build #{srcdir}\n"
+    print "build #{version}\n"
 
     command = ["./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
-    if !run_command("configure", srcdir, command, prefix)
+    if !run_command("configure", command, prefix)
       raise "fail configure #{srcdir}"
     end
 
     command = ["make", :chdir => "#{dirname}/#{srcdir}"]
-    if !run_command("make", srcdir, command, prefix)
+    if !run_command("make", command, prefix)
       raise "fail make #{srcdir}"
     end
 
     command = ["make", "install", :chdir => "#{dirname}/#{srcdir}"]
-    if !run_command("install", srcdir, command, prefix)
+    if !run_command("install", command, prefix)
       raise "fail install #{srcdir}"
     end
   end
