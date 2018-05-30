@@ -103,6 +103,49 @@ def verify_version(n)
   return File.basename(n)
 end
 
+class Formatter
+  def initialize(indent_len, title)
+    @indent_len = indent_len
+    @indent = ' ' * indent_len
+    @title = title
+    @beginning = true
+    @after_newline = false
+  end
+
+  def start
+    print @title.ljust(@indent_len)
+  end
+
+  def output_data(s)
+    return if s == ''
+    s.each_line {|line|
+      if @after_newline
+        print @indent
+        @after_newline = false
+      end
+      print line
+      if /\n\z/ =~ line
+        @after_newline = true
+      end
+    }
+    @beginning = false
+  end
+
+  def show_status(status)
+    if !@beginning
+      puts if !@after_newline
+      print ' ' * (@indent_len-4)
+    end
+    puts status
+    @after_newline = true
+  end
+
+  def last_linebreak
+    puts if !@after_newline
+  end
+end
+
+
 if ARGV.empty?
   puts <<"End"
 usage: all-ruby RUBY-ARGS
@@ -139,31 +182,19 @@ commands.each {|n|
     titles[n] = File.basename(n)
   end
 }
+
 title_len = commands.map {|n| titles[n].length }.max + 1
 indent = ' ' * title_len
-
 commands.each {|n|
-  print titles[n].ljust(title_len)
-  prefix = ''
+  fmt = Formatter.new(title_len, titles[n])
+  fmt.start
   r, w = IO.pipe
   pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
   w.close
-  beginning = true
-  after_newline = false
   begin
     loop {
       s = r.readpartial(4096)
-      s.each_line {|line|
-        if after_newline
-          print indent
-          after_newline = false
-        end
-        print line
-        if /\n\z/ =~ line
-          after_newline = true
-        end
-      }
-      beginning = false
+      fmt.output_data s
     }
   rescue EOFError
     r.close
@@ -171,12 +202,7 @@ commands.each {|n|
   Process.wait pid
   status = $?
   if status.to_i != 0
-    if !beginning
-      puts if !after_newline
-      print ' ' * (title_len-4)
-    end
-    p status
-    after_newline = true
+    fmt.show_status status.inspect
   end
-  puts if !after_newline
+  fmt.last_linebreak
 }
