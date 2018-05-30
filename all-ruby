@@ -154,8 +154,6 @@ end
 class Undup
   def initialize(prev_undup, fmt)
     @prev_undup = prev_undup
-    @prev_content = prev_undup ? prev_undup.content : ''
-    @prev_status = prev_undup&.status
     @fmt = fmt
     @shown = prev_undup.nil? || $opt_all_ruby_show_dup
     @content = String.new
@@ -191,7 +189,7 @@ class Undup
   def output_data(s)
     @content << s
     return @fmt.output_data(s) if @shown
-    return if @prev_content.start_with? @content
+    return if @prev_undup.content.start_with? @content
     difference_found
     @fmt.start
     @fmt.output_data(@content)
@@ -200,7 +198,7 @@ class Undup
   def show_status(status)
     @status = status
     return @fmt.show_status(status) if @shown
-    return if @prev_status.to_i == status.to_i
+    return if @prev_undup.status.to_i == status.to_i
     difference_found
     @fmt.start
     @fmt.output_data(@content)
