@@ -163,6 +163,10 @@ class Undup
   end
   attr_reader :prev_undup, :content, :status, :shown
 
+  def drop_prev
+    @prev_undup = nil
+  end
+
   def difference_found
     if @prev_undup
       @prev_undup.force_output
@@ -171,10 +175,15 @@ class Undup
   end
 
   def start
-    if @prev_undup && !@prev_undup.shown &&
-       @prev_undup.prev_undup && !@prev_undup.prev_undup.shown &&
-       @prev_undup.prev_undup.prev_undup && @prev_undup.prev_undup.prev_undup.shown
-      puts '...'
+    if @prev_undup &&
+       @prev_undup.prev_undup &&
+       @prev_undup.prev_undup.prev_undup
+      if @prev_undup.prev_undup.prev_undup.shown &&
+         !@prev_undup.prev_undup.shown &&
+         !@prev_undup.shown
+        puts '...'
+      end
+      @prev_undup.prev_undup.drop_prev
     end
     return @fmt.start if @shown
   end
