@@ -287,4 +287,4 @@ commands.each_index {|i|
   undup.force_output if i == commands.size - num_last_commands
 }
 
-prev_undup.force_output
+prev_undup.force_output if prev_undup
