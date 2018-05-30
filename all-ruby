@@ -245,7 +245,7 @@ if ENV['ALL_RUBY_SHOW_DUP']
 end
 
 num_last_commands = 1
-if File.file?("./ruby") && File.executable?("./ruby")
+if File.file?("./ruby") && File.executable?("./ruby") && File.owned?("./ruby")
   commands << "./ruby"
   num_last_commands = 2
 end
