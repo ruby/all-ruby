@@ -230,14 +230,9 @@ End
   exit
 end
 
-#p __LINE__
-commands = collect_commands
-#p __LINE__
-commands = sort_by_name(commands)
-
+$opt_all_ruby_since = nil
 if ENV['ALL_RUBY_SINCE']
-  version_since = parse_name(ENV['ALL_RUBY_SINCE'])
-  commands.reject! {|n| (parse_name(File.basename(n)) <=> version_since) < 0 }
+  $opt_all_ruby_since = ENV['ALL_RUBY_SINCE']
 end
 
 $opt_all_ruby_show_dup = false
@@ -248,6 +243,16 @@ end
 $opt_all_ruby_addbins = []
 if ENV['ALL_RUBY_ADDBINS']
   $opt_all_ruby_addbins = ENV['ALL_RUBY_ADDBINS'].split(/\s+/)
+end
+
+#p __LINE__
+commands = collect_commands
+#p __LINE__
+commands = sort_by_name(commands)
+
+if $opt_all_ruby_since
+  version_since = parse_name($opt_all_ruby_since)
+  commands.reject! {|n| (parse_name(File.basename(n)) <=> version_since) < 0 }
 end
 
 num_last_commands = 1
