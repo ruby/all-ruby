@@ -223,8 +223,9 @@ if ARGV.empty?
   puts <<"End"
 usage: all-ruby RUBY-ARGS
 environments:
-  ALL_RUBY_SINCE=ruby-1.4 all-ruby RUBY-ARGS
-  ALL_RUBY_SHOW_DUP=yes all-ruby RUBY-ARGS
+  ALL_RUBY_SINCE=ruby-1.4
+  ALL_RUBY_SHOW_DUP=yes
+  ALL_RUBY_ADDBINS=./ruby       space-separated binaries to be run
 End
   exit
 end
@@ -244,11 +245,18 @@ if ENV['ALL_RUBY_SHOW_DUP']
   $opt_all_ruby_show_dup = true
 end
 
-num_last_commands = 1
-if File.file?("./ruby") && File.executable?("./ruby") && File.owned?("./ruby")
-  commands << "./ruby"
-  num_last_commands = 2
+$opt_all_ruby_addbins = []
+if ENV['ALL_RUBY_ADDBINS']
+  $opt_all_ruby_addbins = ENV['ALL_RUBY_ADDBINS'].split(/\s+/)
 end
+
+num_last_commands = 1
+$opt_all_ruby_addbins.each {|bin|
+  if File.file?(bin) && File.executable?(bin)
+    commands << bin
+    num_last_commands += 1
+  end
+}
 
 if commands.empty?
   puts "no ruby versions found\n"
@@ -291,7 +299,5 @@ commands.each_index {|i|
   undup.last_linebreak
   prev_undup = undup
 
-  undup.force_output if i == commands.size - num_last_commands
+  undup.force_output if commands.size - num_last_commands <= i
 }
-
-prev_undup.force_output if prev_undup
