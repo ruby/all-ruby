@@ -281,11 +281,15 @@ if commands.empty?
 end
 
 titles = {}
+titles_rev = {}
 commands.each {|n|
-  if n == './ruby'
-    titles[n] = n
+  m = File.basename(n)
+  if !titles_rev.has_key?(m)
+    titles[n] = m
+    titles_rev[m] = n
   else
-    titles[n] = File.basename(n)
+    titles[n] = n
+    titles_rev[n] = n
   end
 }
 
