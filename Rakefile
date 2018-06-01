@@ -160,21 +160,18 @@ end
 
 class RubySource
 
-  VERSIONS = []
-  Dir.glob("versions/*.json").each {|fn|
-    VERSIONS << JSON.load(File.read(fn))
+  VERSIONS = Dir.glob("versions/*.json").map {|fn|
+    JSON.load(File.read(fn))
   }
 
-  table = []
-  VERSIONS.each {|v|
+  TABLE = VERSIONS.map {|v|
     h = hashize_version_entry(v)
     next if h.has_key?(:enable) && !h[:enable]
     h.update make_entry(h[:relpath])
     h[:i] = ruby_branch_num(h[:fn])
     h[:j] = vercmp_key(h[:fn].sub(/\.tar.*/, ''))
-    table << h
-  }
-  TABLE = table.sort_by {|h| [h[:i], h[:j]] }
+    h
+  }.compact.sort_by {|h| [h[:i], h[:j]] }
 
   def self.dirs
     result = RubySource::TABLE.map {|h|
