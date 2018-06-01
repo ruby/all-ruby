@@ -128,32 +128,32 @@ end
 
 def ruby_branch(fn)
   case fn
-  when /\Aruby-0\./; 0
-  when /\Aruby-1\.0/; 1
+  when /\Aruby-0(\D|\z)/; 0
+  when /\Aruby-1\.0(\D|\z)/; 1
   when /\Aruby-1\.1a/; 2
   when /\Aruby-1\.1b/; 3
   when /\Aruby-1\.1c/; 4
   when /\Aruby-1\.1d/; 5
-  when /\Aruby-1\.2/; 6
-  when /\Aruby-1\.3/; 7
-  when /\Aruby-1\.4/; 8
-  when /\Aruby-1\.6/; 9
-  when /\Aruby-1\.8\.[0-4]/; 10
-  when /\Aruby-1\.8\.5/; 11
-  when /\Aruby-1\.8\.6/; 12
-  when /\Aruby-1\.8\.7/; 13
-  when /\Aruby-1\.9\.0/; 14
-  when /\Aruby-1\.9\.1/; 15
-  when /\Aruby-1\.9\.2/; 16
-  when /\Aruby-1\.9\.3/; 17
-  when /\Aruby-2\.0/; 18
-  when /\Aruby-2\.1/; 19
-  when /\Aruby-2\.2/; 20
-  when /\Aruby-2\.3/; 21
-  when /\Aruby-2\.4/; 22
-  when /\Aruby-2\.5/; 23
-  when /\Aruby-2\.6/; 24
-  when /\Aruby-(\d+)\.(\d+)/; $1.to_i * 100 + $2.to_i
+  when /\Aruby-1\.2(\D|\z)/; 6
+  when /\Aruby-1\.3(\D|\z)/; 7
+  when /\Aruby-1\.4(\D|\z)/; 8
+  when /\Aruby-1\.6(\D|\z)/; 9
+  when /\Aruby-1\.8\.[0-4](\D|\z)/; 10
+  when /\Aruby-1\.8\.5(\D|\z)/; 11
+  when /\Aruby-1\.8\.6(\D|\z)/; 12
+  when /\Aruby-1\.8\.7(\D|\z)/; 13
+  when /\Aruby-1\.9\.0(\D|\z)/; 14
+  when /\Aruby-1\.9\.1(\D|\z)/; 15
+  when /\Aruby-1\.9\.2(\D|\z)/; 16
+  when /\Aruby-1\.9\.3(\D|\z)/; 17
+  when /\Aruby-2\.0(\D|\z)/; 18
+  when /\Aruby-2\.1(\D|\z)/; 19
+  when /\Aruby-2\.2(\D|\z)/; 20
+  when /\Aruby-2\.3(\D|\z)/; 21
+  when /\Aruby-2\.4(\D|\z)/; 22
+  when /\Aruby-2\.5(\D|\z)/; 23
+  when /\Aruby-2\.6(\D|\z)/; 24
+  when /\Aruby-(\d+)\.(\d+)/; $1.to_i * 1000 + $2.to_i
   else -1
   end
 end
