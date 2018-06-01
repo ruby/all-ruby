@@ -228,7 +228,7 @@ end
 if ARGV.empty?
   puts <<"End"
 usage: all-ruby RUBY-ARGS
-environments:
+environment variables:
   ALL_RUBY_SINCE=ruby-1.4
   ALL_RUBY_SHOW_DUP=yes
   ALL_RUBY_BINS='ruby-2.1.10 ruby-2.2.10 ruby-2.3.7 ruby-2.4.4 ruby-2.5.1'
