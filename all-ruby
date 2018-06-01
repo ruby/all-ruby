@@ -43,7 +43,7 @@ VERSION_WORD_NUMBER = {
 }
 
 def parse_name(n)
-  return nil if /\Aruby-[0-9]/ !~ n
+  return [] if /\Aruby-[0-9]/ !~ n
   ary = []
   n.scan(/(\d+)|[a-z]+/m) {
     if $1
