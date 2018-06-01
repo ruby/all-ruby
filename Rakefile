@@ -95,22 +95,85 @@ def hashize_version_entry(v)
   h
 end
 
+VERSION_WORD_NUMBER = {
+  'ruby' => 0,
+  'preview' => -2,
+  'rc' => -1,
+  'p' => 1,
+  'a' => 1,
+  'b' => 2,
+  'c' => 3,
+  'd' => 4,
+  'repack' => 1,
+}
+
+def vercmp_key(n)
+  return [] if /\Aruby-[0-9]/ !~ n
+  ary = []
+  n.scan(/(\d+)|[a-z]+/m) {
+    if $1
+      ary << $1.to_i
+    else
+      n = VERSION_WORD_NUMBER[$&]
+      if n
+        ary << n
+      else
+        warn "unexpected word: #{$&.inspect}"
+      end
+    end
+  }
+  10.times { ary << 0 }
+  ary
+end
+
+def ruby_branch(fn)
+  case fn
+  when /\Aruby-0\./; 0
+  when /\Aruby-1\.0/; 1
+  when /\Aruby-1\.1a/; 2
+  when /\Aruby-1\.1b/; 3
+  when /\Aruby-1\.1c/; 4
+  when /\Aruby-1\.1d/; 5
+  when /\Aruby-1\.2/; 6
+  when /\Aruby-1\.3/; 7
+  when /\Aruby-1\.4/; 8
+  when /\Aruby-1\.6/; 9
+  when /\Aruby-1\.8\.[0-4]/; 10
+  when /\Aruby-1\.8\.5/; 11
+  when /\Aruby-1\.8\.6/; 12
+  when /\Aruby-1\.8\.7/; 13
+  when /\Aruby-1\.9\.0/; 14
+  when /\Aruby-1\.9\.1/; 15
+  when /\Aruby-1\.9\.2/; 16
+  when /\Aruby-1\.9\.3/; 17
+  when /\Aruby-2\.0/; 18
+  when /\Aruby-2\.1/; 19
+  when /\Aruby-2\.2/; 20
+  when /\Aruby-2\.3/; 21
+  when /\Aruby-2\.4/; 22
+  when /\Aruby-2\.5/; 23
+  when /\Aruby-2\.6/; 24
+  when /\Aruby-(\d+)\.(\d+)/; $1.to_i * 100 + $2.to_i
+  else -1
+  end
+end
+
 class RubySource
 
   TARBALLS = JSON.load(File.read("versions.json"))
 
-  TABLE = []
-
-  TARBALLS.each_with_index {|ary, i|
-    ary.each_with_index {|v, j|
+  table = []
+  TARBALLS.each {|ary|
+    ary.each {|v|
       h = hashize_version_entry(v)
       next if h.has_key?(:enable) && !h[:enable]
       h.update make_entry(h[:relpath])
-      h[:i] = i
-      h[:j] = j
-      TABLE << h
+      h[:i] = ruby_branch(h[:fn])
+      h[:j] = vercmp_key(h[:fn].sub(/\.tar.*/, ''))
+      table << h
     }
   }
+  TABLE = table.sort_by {|h| [h[:i], h[:j]] }
 
   def self.dirs
     result = RubySource::TABLE.map {|h|
