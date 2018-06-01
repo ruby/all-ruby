@@ -48,17 +48,19 @@ all-ruby script runs all ruby binaries.
 rake without arguments shows the help message for the Rakefile.
 
     % rake
-    "rake all" will install 326 ruby
+    "rake all" will install 327 ruby
     "rake list" shows versions
-    "rake sync" updates versions.json
+    "rake sync" updates versions
 
 all-ruby without arguments shows help message for all-ruby script.
 
     % ./all-ruby
     usage: all-ruby RUBY-ARGS
     environments:
-      ALL_RUBY_SINCE=ruby-1.4 all-ruby RUBY-ARGS
-      ALL_RUBY_SHOW_DUP=yes all-ruby RUBY-ARGS
+      ALL_RUBY_SINCE=ruby-1.4
+      ALL_RUBY_SHOW_DUP=yes
+      ALL_RUBY_BINS='ruby-2.1.10 ruby-2.2.10 ruby-2.3.7 ruby-2.4.4 ruby-2.5.1'
+      ALL_RUBY_ADDBINS=./ruby       space-separated binaries to be run
 
 ## Links
 
