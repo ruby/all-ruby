@@ -43,7 +43,7 @@ VERSION_WORD_NUMBER = {
 }
 
 def vercmp_key(n)
-  return [] if /\Aruby-[0-9]/ !~ n
+  return [] if /\A[0-9]/ !~ n
   ary = []
   n.scan(/(\d+)|[a-z]+/m) {
     if $1
@@ -99,7 +99,7 @@ end
 
 def sort_by_name(commands)
   commands.sort_by {|n|
-    vercmp_key(File.basename(n))
+    vercmp_key(File.basename(n).sub(/\Aruby-/, ''))
   }
 end
 
@@ -263,8 +263,8 @@ commands = collect_commands
 commands = sort_by_name(commands)
 
 if $opt_all_ruby_since
-  version_since = vercmp_key($opt_all_ruby_since)
-  commands.reject! {|n| (vercmp_key(File.basename(n)) <=> version_since) < 0 }
+  version_since = vercmp_key($opt_all_ruby_since.sub(/\Aruby-/, ''))
+  commands.reject! {|n| (vercmp_key(File.basename(n).sub(/\Aruby-/, '')) <=> version_since) < 0 }
 end
 
 num_last_commands = 1
