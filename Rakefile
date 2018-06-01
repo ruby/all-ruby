@@ -731,7 +731,8 @@ def update_versions(relpath_list)
       #puts "found: #{fn}"
     else
       #puts "not found: #{fn}"
-      File.write fn, JSON.pretty_generate(relpath)
+      puts "#{fn} added."
+      File.write fn, (JSON.pretty_generate(relpath)+"\n")
     end
   }
 end
