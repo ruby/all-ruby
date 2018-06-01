@@ -151,7 +151,7 @@ class Formatter
   end
 end
 
-class Squeeze
+class Squeezer
   def initialize(prev_squeeze, fmt)
     @prev_squeeze = prev_squeeze
     @fmt = fmt
@@ -300,7 +300,7 @@ prev_squeeze = nil
 commands.each_index {|i|
   n = commands[i]
   fmt = Formatter.new(title_len, titles[n])
-  squeeze = Squeeze.new(prev_squeeze, fmt)
+  squeeze = Squeezer.new(prev_squeeze, fmt)
   squeeze.start
   r, w = IO.pipe
   pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
