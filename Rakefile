@@ -56,7 +56,7 @@ require 'digest'
 def show_help_message
   puts "\"rake all\" will install #{RubySource::TABLE.length} ruby"
   puts "\"rake list\" shows versions"
-  puts "\"rake sync\" updates versions.json"
+  puts "\"rake sync\" updates versions"
 end
 
 URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
@@ -160,18 +160,19 @@ end
 
 class RubySource
 
-  TARBALLS = JSON.load(File.read("versions.json"))
+  VERSIONS = []
+  Dir.glob("versions/*.json").each {|fn|
+    VERSIONS << JSON.load(File.read(fn))
+  }
 
   table = []
-  TARBALLS.each {|ary|
-    ary.each {|v|
-      h = hashize_version_entry(v)
-      next if h.has_key?(:enable) && !h[:enable]
-      h.update make_entry(h[:relpath])
-      h[:i] = ruby_branch(h[:fn])
-      h[:j] = vercmp_key(h[:fn].sub(/\.tar.*/, ''))
-      table << h
-    }
+  VERSIONS.each {|v|
+    h = hashize_version_entry(v)
+    next if h.has_key?(:enable) && !h[:enable]
+    h.update make_entry(h[:relpath])
+    h[:i] = ruby_branch(h[:fn])
+    h[:j] = vercmp_key(h[:fn].sub(/\.tar.*/, ''))
+    table << h
   }
   TABLE = table.sort_by {|h| [h[:i], h[:j]] }
 
@@ -718,50 +719,21 @@ def filter_suffix(hs)
   }
 end
 
-def common_prefix_length(str1, str2)
-  if str2.length < str1.length
-    str1, str2 = str2, str1
-  end
-  str1.length.times {|i|
-    if str1[i] != str2[i]
-      return i
+def update_versions(relpath_list)
+  relpath_list.each {|relpath|
+    h = make_entry(relpath)
+    if /\A[0-9][a-z0-9._-]*\z/ !~ h[:version]
+      warn "unexpected version format: #{h[:version].inspect}"
+      next
+    end
+    fn = "versions/#{h[:version]}.json"
+    if File.exist?(fn)
+      #puts "found: #{fn}"
+    else
+      #puts "not found: #{fn}"
+      File.write fn, JSON.pretty_generate(relpath)
     end
   }
-  str1.length
-end
-
-def add_version(versions, relpath)
-  prefix_length_list = versions.map {|ary|
-    ary.map {|v|
-      h = hashize_version_entry(v)
-      return if relpath == h[:relpath]
-      common_prefix_length(relpath, h[:relpath])
-    }.max
-  }
-  target_list_index = (0...prefix_length_list.length).max_by {|i| prefix_length_list[i] }
-  if %r{/} =~ relpath && %r{/} !~ relpath[0, prefix_length_list[target_list_index]]
-    versions << [relpath]
-  else
-    versions[target_list_index] << relpath
-  end
-  puts "versions.json : #{relpath} added."
-end
-
-def update_versions(relpath_list)
-  return if relpath_list.empty?
-  content1 = File.read("versions.json")
-  versions = JSON.load(content1)
-  relpath_list.each {|relpath|
-    add_version versions, relpath
-  }
-  content2 = JSON.pretty_generate(versions)
-  if content1 != content2
-    open("versions.json.new", "w") {|f|
-      f.puts content2
-    }
-    #system("diff -u versions.json versions.json.new")
-    File.rename("versions.json.new", "versions.json")
-  end
 end
 
 task 'sync' do
@@ -784,7 +756,8 @@ def longest_common_substring_of ary
   }
 end
 
-RubySource::TARBALLS.each do |versions|
+RubySource::TABLE.chunk {|h| h[:i] }.
+  map {|_, hs| hs.map {|h| h[:relpath] } }.each do |versions|
   ary = versions.reject {|i| Hash === i }
   str = longest_common_substring_of ary
   str.sub!(%r{.+/ruby-}, '')
