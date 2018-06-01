@@ -70,6 +70,7 @@ def collect_commands
       next if %r{\A/} !~ d
       begin
         Dir.foreach(d) {|n|
+          next if /\Aruby-[0-9]/ !~ File.basename(n)
           next if !parse_name(n)
           next if commands.include? n
           bin = "#{d}/#{n}"
@@ -101,10 +102,6 @@ def sort_by_name(commands)
   commands.sort_by {|n|
     parse_name(File.basename(n))
   }
-end
-
-def verify_version(n)
-  return File.basename(n)
 end
 
 class Formatter
