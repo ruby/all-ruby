@@ -71,7 +71,6 @@ def collect_commands
       begin
         Dir.foreach(d) {|n|
           next if /\Aruby-[0-9]/ !~ File.basename(n)
-          next if !parse_name(n)
           next if commands.include? n
           bin = "#{d}/#{n}"
           if File.file?(bin) && File.executable?(bin)
