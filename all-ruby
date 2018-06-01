@@ -152,36 +152,36 @@ class Formatter
 end
 
 class Squeezer
-  def initialize(prev_squeeze, fmt)
-    @prev_squeeze = prev_squeeze
+  def initialize(prev_sq, fmt)
+    @prev_sq = prev_sq
     @fmt = fmt
-    @shown = prev_squeeze.nil? || $opt_all_ruby_show_dup
+    @shown = prev_sq.nil? || $opt_all_ruby_show_dup
     @content = String.new
     @status = nil
   end
-  attr_reader :prev_squeeze, :content, :status, :shown
+  attr_reader :prev_sq, :content, :status, :shown
 
   def drop_prev
-    @prev_squeeze = nil
+    @prev_sq = nil
   end
 
   def difference_found
-    if @prev_squeeze
-      @prev_squeeze.force_output
+    if @prev_sq
+      @prev_sq.force_output
     end
     @shown = true
   end
 
   def start
-    if @prev_squeeze &&
-       @prev_squeeze.prev_squeeze &&
-       @prev_squeeze.prev_squeeze.prev_squeeze
-      if @prev_squeeze.prev_squeeze.prev_squeeze.shown &&
-         !@prev_squeeze.prev_squeeze.shown &&
-         !@prev_squeeze.shown
+    if @prev_sq &&
+       @prev_sq.prev_sq &&
+       @prev_sq.prev_sq.prev_sq
+      if @prev_sq.prev_sq.prev_sq.shown &&
+         !@prev_sq.prev_sq.shown &&
+         !@prev_sq.shown
         puts '...'
       end
-      @prev_squeeze.prev_squeeze.drop_prev
+      @prev_sq.prev_sq.drop_prev
     end
     return @fmt.start if @shown
   end
@@ -189,7 +189,7 @@ class Squeezer
   def output_data(s)
     @content << s
     return @fmt.output_data(s) if @shown
-    return if @prev_squeeze.content.start_with? @content
+    return if @prev_sq.content.start_with? @content
     difference_found
     @fmt.start
     @fmt.output_data(@content)
@@ -198,7 +198,7 @@ class Squeezer
   def show_status(status)
     @status = status
     return @fmt.show_status(status) if @shown
-    return if @prev_squeeze.status.to_i == status.to_i
+    return if @prev_sq.status.to_i == status.to_i
     difference_found
     @fmt.start
     @fmt.output_data(@content)
@@ -211,10 +211,10 @@ class Squeezer
 
   def force_output
     return if @shown
-    if @prev_squeeze &&
-       @prev_squeeze.prev_squeeze &&
-       @prev_squeeze.prev_squeeze.shown &&
-       !@prev_squeeze.shown
+    if @prev_sq &&
+       @prev_sq.prev_sq &&
+       @prev_sq.prev_sq.shown &&
+       !@prev_sq.shown
       puts '...'
     end
     @shown = true
@@ -296,12 +296,12 @@ commands.each {|n|
 title_len = commands.map {|n| titles[n].length }.max + 1
 indent = ' ' * title_len
 
-prev_squeeze = nil
+prev_sq = nil
 commands.each_index {|i|
   n = commands[i]
   fmt = Formatter.new(title_len, titles[n])
-  squeeze = Squeezer.new(prev_squeeze, fmt)
-  squeeze.start
+  sq = Squeezer.new(prev_sq, fmt)
+  sq.start
   r, w = IO.pipe
   pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
   w.close
@@ -311,14 +311,14 @@ commands.each_index {|i|
     rescue EOFError
       break
     end
-    squeeze.output_data s
+    sq.output_data s
   }
   r.close
   Process.wait pid
   status = $?
-  squeeze.show_status status
-  squeeze.last_linebreak
-  prev_squeeze = squeeze
+  sq.show_status status
+  sq.last_linebreak
+  prev_sq = sq
 
-  squeeze.force_output if commands.size - num_last_commands <= i
+  sq.force_output if commands.size - num_last_commands <= i
 }
