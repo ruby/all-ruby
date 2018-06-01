@@ -151,37 +151,37 @@ class Formatter
   end
 end
 
-class Undup
-  def initialize(prev_undup, fmt)
-    @prev_undup = prev_undup
+class Squeeze
+  def initialize(prev_squeeze, fmt)
+    @prev_squeeze = prev_squeeze
     @fmt = fmt
-    @shown = prev_undup.nil? || $opt_all_ruby_show_dup
+    @shown = prev_squeeze.nil? || $opt_all_ruby_show_dup
     @content = String.new
     @status = nil
   end
-  attr_reader :prev_undup, :content, :status, :shown
+  attr_reader :prev_squeeze, :content, :status, :shown
 
   def drop_prev
-    @prev_undup = nil
+    @prev_squeeze = nil
   end
 
   def difference_found
-    if @prev_undup
-      @prev_undup.force_output
+    if @prev_squeeze
+      @prev_squeeze.force_output
     end
     @shown = true
   end
 
   def start
-    if @prev_undup &&
-       @prev_undup.prev_undup &&
-       @prev_undup.prev_undup.prev_undup
-      if @prev_undup.prev_undup.prev_undup.shown &&
-         !@prev_undup.prev_undup.shown &&
-         !@prev_undup.shown
+    if @prev_squeeze &&
+       @prev_squeeze.prev_squeeze &&
+       @prev_squeeze.prev_squeeze.prev_squeeze
+      if @prev_squeeze.prev_squeeze.prev_squeeze.shown &&
+         !@prev_squeeze.prev_squeeze.shown &&
+         !@prev_squeeze.shown
         puts '...'
       end
-      @prev_undup.prev_undup.drop_prev
+      @prev_squeeze.prev_squeeze.drop_prev
     end
     return @fmt.start if @shown
   end
@@ -189,7 +189,7 @@ class Undup
   def output_data(s)
     @content << s
     return @fmt.output_data(s) if @shown
-    return if @prev_undup.content.start_with? @content
+    return if @prev_squeeze.content.start_with? @content
     difference_found
     @fmt.start
     @fmt.output_data(@content)
@@ -198,7 +198,7 @@ class Undup
   def show_status(status)
     @status = status
     return @fmt.show_status(status) if @shown
-    return if @prev_undup.status.to_i == status.to_i
+    return if @prev_squeeze.status.to_i == status.to_i
     difference_found
     @fmt.start
     @fmt.output_data(@content)
@@ -211,10 +211,10 @@ class Undup
 
   def force_output
     return if @shown
-    if @prev_undup &&
-       @prev_undup.prev_undup &&
-       @prev_undup.prev_undup.shown &&
-       !@prev_undup.shown
+    if @prev_squeeze &&
+       @prev_squeeze.prev_squeeze &&
+       @prev_squeeze.prev_squeeze.shown &&
+       !@prev_squeeze.shown
       puts '...'
     end
     @shown = true
@@ -292,12 +292,12 @@ commands.each {|n|
 title_len = commands.map {|n| titles[n].length }.max + 1
 indent = ' ' * title_len
 
-prev_undup = nil
+prev_squeeze = nil
 commands.each_index {|i|
   n = commands[i]
   fmt = Formatter.new(title_len, titles[n])
-  undup = Undup.new(prev_undup, fmt)
-  undup.start
+  squeeze = Squeeze.new(prev_squeeze, fmt)
+  squeeze.start
   r, w = IO.pipe
   pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
   w.close
@@ -307,14 +307,14 @@ commands.each_index {|i|
     rescue EOFError
       break
     end
-    undup.output_data s
+    squeeze.output_data s
   }
   r.close
   Process.wait pid
   status = $?
-  undup.show_status status
-  undup.last_linebreak
-  prev_undup = undup
+  squeeze.show_status status
+  squeeze.last_linebreak
+  prev_squeeze = squeeze
 
-  undup.force_output if commands.size - num_last_commands <= i
+  squeeze.force_output if commands.size - num_last_commands <= i
 }
