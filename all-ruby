@@ -63,32 +63,36 @@ end
 
 def collect_commands
   commands = []
-  ENV['PATH'].split(/:/).each {|d|
-    next if %r{\A/} !~ d
-    begin
-      Dir.foreach(d) {|n|
-        next if !parse_name(n)
-        next if commands.include? n
-        bin = "#{d}/#{n}"
-        if File.file?(bin) && File.executable?(bin)
-          commands << n
-        end
-      }
-    rescue Errno::ENOENT
-      next
-    end
-  }
-  all_ruby_bin = File.join(File.dirname(File.expand_path(File.realpath(__FILE__))), 'bin')
-  if File.directory? all_ruby_bin
-    Dir.foreach(all_ruby_bin) {|n|
-      next if !parse_name(n)
-      next if commands.include? n
-      bin = "#{all_ruby_bin}/#{n}"
-      next if commands.include? bin
-      if File.file?(bin) && File.executable?(bin)
-        commands << bin
+  if $opt_all_ruby_bins
+    commands = $opt_all_ruby_bins
+  else
+    ENV['PATH'].split(/:/).each {|d|
+      next if %r{\A/} !~ d
+      begin
+        Dir.foreach(d) {|n|
+          next if !parse_name(n)
+          next if commands.include? n
+          bin = "#{d}/#{n}"
+          if File.file?(bin) && File.executable?(bin)
+            commands << n
+          end
+        }
+      rescue Errno::ENOENT
+        next
       end
     }
+    all_ruby_bin = File.join(File.dirname(File.expand_path(File.realpath(__FILE__))), 'bin')
+    if File.directory? all_ruby_bin
+      Dir.foreach(all_ruby_bin) {|n|
+        next if !parse_name(n)
+        next if commands.include? n
+        bin = "#{all_ruby_bin}/#{n}"
+        next if commands.include? bin
+        if File.file?(bin) && File.executable?(bin)
+          commands << bin
+        end
+      }
+    end
   end
   commands
 end
@@ -211,6 +215,12 @@ class Undup
 
   def force_output
     return if @shown
+    if @prev_undup &&
+       @prev_undup.prev_undup &&
+       @prev_undup.prev_undup.shown &&
+       !@prev_undup.shown
+      puts '...'
+    end
     @shown = true
     @fmt.start
     @fmt.output_data(@content)
@@ -225,6 +235,7 @@ usage: all-ruby RUBY-ARGS
 environments:
   ALL_RUBY_SINCE=ruby-1.4
   ALL_RUBY_SHOW_DUP=yes
+  ALL_RUBY_BINS='ruby-2.1.10 ruby-2.2.10 ruby-2.3.7 ruby-2.4.4 ruby-2.5.1'
   ALL_RUBY_ADDBINS=./ruby       space-separated binaries to be run
 End
   exit
@@ -238,6 +249,11 @@ end
 $opt_all_ruby_show_dup = false
 if ENV['ALL_RUBY_SHOW_DUP']
   $opt_all_ruby_show_dup = true
+end
+
+$opt_all_ruby_bins = nil
+if ENV['ALL_RUBY_BINS']
+  $opt_all_ruby_bins = ENV['ALL_RUBY_BINS'].split(/\s+/)
 end
 
 $opt_all_ruby_addbins = []
