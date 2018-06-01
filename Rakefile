@@ -126,7 +126,7 @@ def vercmp_key(n)
   ary
 end
 
-def ruby_branch(fn)
+def ruby_branch_num(fn)
   case fn
   when /\Aruby-0(\D|\z)/; 0
   when /\Aruby-1\.0(\D|\z)/; 1
@@ -170,7 +170,7 @@ class RubySource
     h = hashize_version_entry(v)
     next if h.has_key?(:enable) && !h[:enable]
     h.update make_entry(h[:relpath])
-    h[:i] = ruby_branch(h[:fn])
+    h[:i] = ruby_branch_num(h[:fn])
     h[:j] = vercmp_key(h[:fn].sub(/\.tar.*/, ''))
     table << h
   }
