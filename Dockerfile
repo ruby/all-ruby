@@ -26,7 +26,7 @@ RUN apt-get upgrade    \
  && apt-get autoremove \
  && apt-get clean
 
-ADD Rakefile all-ruby /all-ruby/
+ADD Rakefile /all-ruby/
 ADD patch /all-ruby/patch/
 WORKDIR /all-ruby
 
@@ -80,3 +80,5 @@ ADD versions/2.5* /all-ruby/versions/
 RUN rake -j ${j} all-2.5   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.5*
 ADD versions/2.6* /all-ruby/versions/
 RUN rake -j ${j} 2.6.0-preview1 2.6.0-preview2   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.6*
+
+ADD all-ruby /all-ruby/
