@@ -126,7 +126,7 @@ def vercmp_key(n)
   ary
 end
 
-def ruby_branch_num(fn)
+def vercmp_major_key(fn)
   case fn
   when /\A0(\D|\z)/; 0
   when /\A1\.0(\D|\z)/; 1
@@ -168,10 +168,8 @@ class RubySource
     h = hashize_version_entry(v)
     next if h.has_key?(:enable) && !h[:enable]
     h.update make_entry(h[:relpath])
-    h[:i] = ruby_branch_num(h[:version])
-    h[:j] = vercmp_key(h[:version])
     h
-  }.compact.sort_by {|h| [h[:i], h[:j]] }
+  }.compact.sort_by {|h| [vercmp_major_key(h[:version]), vercmp_key(h[:version])] }
 
   def self.dirs
     result = RubySource::TABLE.map {|h|
@@ -196,18 +194,6 @@ class RubySource
     result
   end
 
-  def self.fuzzy_lookup(arg)
-    TABLE.each {|h|
-      if h[:relpath] == arg ||
-         h[:fn] == arg ||
-         h[:prefix] + h[:version] == arg ||
-         h[:version] == arg
-        return h
-      end
-    }
-    nil
-  end
-
   def self.version_lookup(version)
     TABLE.each {|h|
       if h[:version] == version
@@ -218,7 +204,7 @@ class RubySource
   end
 
   def initialize(arg)
-    @h = RubySource.fuzzy_lookup(arg)
+    @h = RubySource.version_lookup(arg)
     if !@h
       raise "table lookup failed: #{arg.inspect}"
     end
@@ -287,10 +273,8 @@ class RubySource
   end
 
   def local_version_cmp(version)
-    arg_hash = RubySource.version_lookup(version)
-    raise "version not found: #{version.inspect}" if !arg_hash
-    return nil if @h[:i] != arg_hash[:i]
-    @h[:j] <=> arg_hash[:j]
+    return nil if vercmp_major_key(@h[:version]) != vercmp_major_key(version)
+    vercmp_key(@h[:version]) <=> vercmp_key(version)
   end
 
   def local_version_lt(version)
@@ -323,15 +307,11 @@ class RubySource
   end
 
   def global_version_eq(version)
-    arg_hash = RubySource.version_lookup(version)
-    raise "version not found: #{version.inspect}" if !arg_hash
-    @h[:i] == arg_hash[:i]
+    vercmp_major_key(@h[:version]) == vercmp_major_key(version)
   end
 
   def global_version_cmp(version)
-    arg_hash = RubySource.version_lookup(version)
-    raise "version not found: #{version.inspect}" if !arg_hash
-    @h[:i] <=> arg_hash[:i]
+    vercmp_major_key(@h[:version]) <=> vercmp_major_key(version)
   end
 
   def global_version_lt(version)
@@ -754,7 +734,7 @@ def longest_common_substring_of ary
   }
 end
 
-RubySource::TABLE.chunk {|h| h[:i] }.
+RubySource::TABLE.chunk {|h| vercmp_major_key(h[:version]) }.
   map {|_, hs| hs.map {|h| h[:relpath] } }.each do |versions|
   ary = versions.reject {|i| Hash === i }
   str = longest_common_substring_of ary
