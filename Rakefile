@@ -218,6 +218,10 @@ class RubySource
     @h[:version]
   end
 
+  def build_reldir
+    "build/#{@h[:version]}"
+  end
+
   def filename
     @h[:fn]
   end
@@ -243,16 +247,16 @@ class RubySource
 
   def extract_tarball(filename)
     filename = File.realpath(filename)
-    FileUtils.mkpath dirname
-    ary = Dir.glob("#{dirname}/*/ruby.c")
+    FileUtils.mkpath build_reldir
+    ary = Dir.glob("#{build_reldir}/*/ruby.c")
     if !ary.empty?
       ary.each {|fn|
         FileUtils.rmtree File.dirname(fn)
       }
     end
     # Assume recent GNU tar which recognize compression automatically.
-    system "tar", "xf", filename, :chdir => dirname
-    ary = Dir.glob("#{dirname}/*/ruby.c")
+    system "tar", "xf", filename, :chdir => build_reldir
+    ary = Dir.glob("#{build_reldir}/*/ruby.c")
     if ary.empty?
       raise "no ruby.c found."
     end
@@ -346,9 +350,9 @@ class RubySource
   end
 
   def patch(srcdir, name)
-    prefix = File.realpath(dirname)
+    prefix = File.realpath(build_reldir)
     patch = File.realpath("patch/#{name}.diff")
-    command = ["patch", "-p0", :in => patch, :chdir => "#{dirname}/#{srcdir}"]
+    command = ["patch", "-p0", :in => patch, :chdir => "#{build_reldir}/#{srcdir}"]
     return false if !run_command("patch-#{name}", command, prefix)
   end
 
@@ -365,7 +369,7 @@ class RubySource
   def apply_workaround(srcdir)
     unless global_version_ge('2.4.0')
       # OpenSSL 1.1.0 is supported since Ruby 2.4.0.
-      dir = "#{dirname}/#{srcdir}/ext/openssl"
+      dir = "#{build_reldir}/#{srcdir}/ext/openssl"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
@@ -406,16 +410,16 @@ class RubySource
       patch srcdir, 'ruby-errno'
     end
     if local_version_le('0.95')
-      modify_file("#{dirname}/#{srcdir}/configure") {|content|
+      modify_file("#{build_reldir}/#{srcdir}/configure") {|content|
         content.gsub(/LDSHARED='ld'/, "LDSHARED='gcc -shared'")
       }
     end
     if local_version_le('0.76')
-      modify_file("#{dirname}/#{srcdir}/configure") {|content|
+      modify_file("#{build_reldir}/#{srcdir}/configure") {|content|
         content.gsub(/^pow\(\)/, "pow(1.0, 1.0)")
       }
     end
-    parse_y_fn = "#{dirname}/#{srcdir}/parse.y"
+    parse_y_fn = "#{build_reldir}/#{srcdir}/parse.y"
     if File.file?(parse_y_fn)
       parse_y_orig = File.read(parse_y_fn)
       parse_y = parse_y_orig.dup
@@ -428,12 +432,12 @@ class RubySource
       end
     end
     if version_eq('1.3.2-990413')
-      dir = "#{dirname}/#{srcdir}/ext/nkf"
+      dir = "#{build_reldir}/#{srcdir}/ext/nkf"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
     if global_version_lt('1.1b0') || local_version_lt('1.1b9_19')
-      convert_varargs_to_stdarg "#{dirname}/#{srcdir}"
+      convert_varargs_to_stdarg "#{build_reldir}/#{srcdir}"
     end
     if local_version_between('1.1b9_05', '1.1b9_09')
       src = File.read(parse_y_fn)
@@ -458,7 +462,7 @@ class RubySource
       patch srcdir, 'error-error'
     end
     if local_version_le('0.76')
-      modify_file("#{dirname}/#{srcdir}/io.c") {|content|
+      modify_file("#{build_reldir}/#{srcdir}/io.c") {|content|
         content.gsub!(/->_gptr/, "->_IO_read_ptr")
         content.gsub!(/->_egptr/, "->_IO_read_end")
         content
@@ -570,7 +574,7 @@ class RubySource
   end
 
   def build_ruby32(srcdir)
-    prefix = File.realpath(dirname)
+    prefix = File.realpath(build_reldir)
     print "build #{version}\n"
 
     gcc = which('gcc')
@@ -596,37 +600,37 @@ class RubySource
       setup[0]['LIBS'] = '-lcrypt'
     end
 
-    command = [*setup, "./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
+    command = [*setup, "./configure", "--prefix=#{prefix}", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("configure", command, prefix)
       raise "fail configure #{version}"
     end
 
-    command = [*setup, "make", :chdir => "#{dirname}/#{srcdir}"]
+    command = [*setup, "make", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("make", command, prefix)
       raise "fail make #{version}"
     end
 
-    command = [*setup, "make", "install", :chdir => "#{dirname}/#{srcdir}"]
+    command = [*setup, "make", "install", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("install", command, prefix)
       raise "fail install #{version}"
     end
   end
 
   def build_ruby(srcdir)
-    prefix = File.realpath(dirname)
+    prefix = File.realpath(build_reldir)
     print "build #{version}\n"
 
-    command = ["./configure", "--prefix=#{prefix}", :chdir => "#{dirname}/#{srcdir}"]
+    command = ["./configure", "--prefix=#{prefix}", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("configure", command, prefix)
       raise "fail configure #{version}"
     end
 
-    command = ["make", :chdir => "#{dirname}/#{srcdir}"]
+    command = ["make", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("make", command, prefix)
       raise "fail make #{version}"
     end
 
-    command = ["make", "install", :chdir => "#{dirname}/#{srcdir}"]
+    command = ["make", "install", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("install", command, prefix)
       raise "fail install #{version}"
     end
@@ -650,15 +654,15 @@ RubySource::TABLE.each {|h|
 
   task h[:version] => "bin/ruby-#{h[:version]}"
 
-  file "bin/ruby-#{h[:version]}" => "#{h[:version]}/bin/ruby" do |t|
+  file "bin/ruby-#{h[:version]}" => "build/#{h[:version]}/bin/ruby" do |t|
     FileUtils.mkpath File.dirname(t.name)
-    unless File.exist? "#{h[:version]}/bin/ruby"
+    unless File.exist? "build/#{h[:version]}/bin/ruby"
       raise "ruby binary not exist"
     end
-    File.symlink "../#{h[:version]}/bin/ruby", "bin/ruby-#{h[:version]}"
+    File.symlink "../build/#{h[:version]}/bin/ruby", "bin/ruby-#{h[:version]}"
   end
 
-  file "#{h[:version]}/bin/ruby" => "DIST/#{h[:fn]}" do |t|
+  file "build/#{h[:version]}/bin/ruby" => "DIST/#{h[:fn]}" do |t|
     srcdir = source.extract_tarball("DIST/#{h[:fn]}")
     method = source.apply_workaround(srcdir)
     source.send(method, srcdir)
