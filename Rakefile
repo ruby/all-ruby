@@ -642,8 +642,24 @@ task :list do
   puts RubySource::TABLE.map {|h| h[:version] }
 end
 
+task :setup_build do
+  if File.symlink? "build"
+    raise "'build' symlink already exist."
+  end
+  build_dirname = "../build-all-ruby"
+  Dir.mkdir build_dirname
+  File.symlink build_dirname, "build"
+  puts "symlink created: build -> #{build_dirname}"
+end
+
 multitask :all => RubySource::TABLE.map {|h| h[:version] }.reverse
 task :allseq => RubySource::TABLE.map {|h| h[:version] }.reverse
+
+def check_build_directory_is_symlink
+  unless File.symlink? "build"
+    raise "'build' directory must be a symlink to outside of all-ruby directory.  use 'rake setup_build' first."
+  end
+end
 
 RubySource::TABLE.each {|h|
   source = RubySource.new(h[:version])
@@ -651,6 +667,7 @@ RubySource::TABLE.each {|h|
   task h[:version] => "bin/ruby-#{h[:version]}"
 
   file "bin/ruby-#{h[:version]}" => "build/#{h[:version]}/bin/ruby" do |t|
+    check_build_directory_is_symlink
     FileUtils.mkpath File.dirname(t.name)
     unless File.exist? "build/#{h[:version]}/bin/ruby"
       raise "ruby binary not exist"
@@ -659,6 +676,7 @@ RubySource::TABLE.each {|h|
   end
 
   file "build/#{h[:version]}/bin/ruby" => "DIST/#{h[:fn]}" do |t|
+    check_build_directory_is_symlink
     srcdir = source.extract_tarball("DIST/#{h[:fn]}")
     method = source.apply_workaround(srcdir)
     source.send(method, srcdir)

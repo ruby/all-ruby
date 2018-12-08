@@ -24,11 +24,13 @@ This software provides Rakefile and "rake all" downloads and builds
 historic ruby versions.
 
     % git clone https://github.com/akr/all-ruby.git
-    % mkdir build-all-ruby; ln -s ../build-all-ruby all-ruby/build
     % cd all-ruby
+    % rake setup_build
     % rake all  # this takes long time
 
-Note that build-all-ruby directory is required to avoid that
+Note that `rake setup_build` is same as
+`mkdir ../build-all-ruby; ln -s ../build-all-ruby build`.
+build-all-ruby directory is required to avoid that
 `ruby -v` emits `last_commit=` line.
 
 all-ruby script runs all ruby binaries.
