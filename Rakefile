@@ -214,10 +214,6 @@ class RubySource
     @h[:version]
   end
 
-  def dirname
-    @h[:version]
-  end
-
   def build_reldir
     "build/#{@h[:version]}"
   end
