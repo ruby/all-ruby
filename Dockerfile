@@ -80,6 +80,6 @@ RUN rake -j ${j} all-2.4   && rm -rf DIST */log */ruby*/ && rdfind -makehardlink
 ADD versions/2.5* /all-ruby/versions/
 RUN rake -j ${j} all-2.5   && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.5*
 ADD versions/2.6* /all-ruby/versions/
-RUN rake -j ${j} 2.6.0-preview1 2.6.0-preview2 2.6.0-preview3 2.6.0-rc1 2.6.0-rc2 && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.6*
+RUN rake -j ${j} all-2.6 && rm -rf DIST */log */ruby*/ && rdfind -makehardlinks true 2.6*
 
 ADD all-ruby /all-ruby/
