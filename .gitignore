@@ -1,2 +1,6 @@
 [012].*
 !*.json
+DIST
+bin
+build
+
