@@ -295,7 +295,6 @@ commands.each {|n|
 }
 
 title_len = commands.map {|n| titles[n].length }.max + 1
-indent = ' ' * title_len
 
 prev_sq = nil
 commands.each_index {|i|
