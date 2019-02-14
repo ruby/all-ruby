@@ -230,10 +230,10 @@ if ARGV.empty?
   puts <<"End"
 usage: all-ruby RUBY-ARGS
 environment variables:
-  ALL_RUBY_SINCE=ruby-1.4
-  ALL_RUBY_SHOW_DUP=yes
-  ALL_RUBY_BINS='ruby-2.1.10 ruby-2.2.10 ruby-2.3.7 ruby-2.4.4 ruby-2.5.1'
-  ALL_RUBY_ADDBINS=./ruby       space-separated binaries to be run
+  ALL_RUBY_SINCE=ruby-1.4               run only versions since specified one
+  ALL_RUBY_BINS='ruby-2.4.4 ruby-2.5.1' run only versions specfied
+  ALL_RUBY_ADDBINS=./ruby               run specified commands additionaly
+  ALL_RUBY_SHOW_DUP=yes                 don't suppress duplicated output
 End
   exit
 end
