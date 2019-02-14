@@ -49,14 +49,14 @@ all-ruby script runs all ruby binaries.
                       #<Process::Status: pid 18958 exit 1>
     ruby-1.3.4-990611     "1.3.4"
     ...
-    ruby-2.6.0-preview1   "2.6.0"
+    ruby-2.6.1            "2.6.1"
 
 ## Documentation
 
 rake without arguments shows the help message for the Rakefile.
 
     % rake
-    "rake all" will install 327 ruby
+    "rake all" will install 338 ruby
     "rake list" shows versions
     "rake sync" updates versions
 
@@ -64,11 +64,11 @@ all-ruby without arguments shows help message for all-ruby script.
 
     % ./all-ruby
     usage: all-ruby RUBY-ARGS
-    environments:
-      ALL_RUBY_SINCE=ruby-1.4
-      ALL_RUBY_SHOW_DUP=yes
-      ALL_RUBY_BINS='ruby-2.1.10 ruby-2.2.10 ruby-2.3.7 ruby-2.4.4 ruby-2.5.1'
-      ALL_RUBY_ADDBINS=./ruby       space-separated binaries to be run
+    environment variables:
+      ALL_RUBY_SINCE=ruby-1.4               run only versions since specified one
+      ALL_RUBY_BINS='ruby-2.4.4 ruby-2.5.1' run only versions specfied
+      ALL_RUBY_ADDBINS=./ruby               run specified commands additionaly
+      ALL_RUBY_SHOW_DUP=yes                 don't suppress duplicated output
 
 ## Links
 
