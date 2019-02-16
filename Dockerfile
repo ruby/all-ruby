@@ -103,4 +103,5 @@ RUN rake -j ${j} all-2.5   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -
 ADD versions/2.6* /all-ruby/versions/
 RUN rake -j ${j} all-2.6   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true build/2.6*
 
+RUN rm -rf result.txt Rakefile versions/ patch/
 ADD all-ruby /all-ruby/
