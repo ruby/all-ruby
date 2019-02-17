@@ -30,6 +30,9 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+require_relative 'lib/formatter'
+require_relative 'lib/squeezer'
+
 VERSION_WORD_NUMBER = {
   'ruby' => 0,
   'preview' => -2,
@@ -86,129 +89,6 @@ def sort_by_name(commands)
   commands.sort_by {|n|
     vercmp_key(File.basename(n).sub(/\Aruby-/, ''))
   }
-end
-
-class Formatter
-  def initialize(indent_len, title)
-    @indent_len = indent_len
-    @indent = ' ' * indent_len
-    @title = title
-    @beginning = true
-    @after_newline = false
-    @content = String.new
-    @status = nil
-  end
-  attr_reader :content, :status
-
-  def start
-    print @title.ljust(@indent_len)
-  end
-
-  def output_data(s)
-    return if s == ''
-    @content << s
-    s.each_line {|line|
-      if @after_newline
-        print @indent
-        @after_newline = false
-      end
-      print line
-      if /\n\z/ =~ line
-        @after_newline = true
-      end
-    }
-    @beginning = false
-  end
-
-  def show_status(status)
-    if status.to_i != 0
-      if !@beginning
-        puts if !@after_newline
-        print ' ' * (@indent_len-4)
-      end
-      puts status.inspect
-      @after_newline = true
-    end
-  end
-
-  def last_linebreak
-    puts if !@after_newline
-  end
-end
-
-class Squeezer
-  def initialize(prev_sq, fmt)
-    @prev_sq = prev_sq
-    @fmt = fmt
-    @shown = prev_sq.nil? || $opt_all_ruby_show_dup
-    @content = String.new
-    @status = nil
-  end
-  attr_reader :prev_sq, :content, :status, :shown
-
-  def drop_prev
-    @prev_sq = nil
-  end
-
-  def difference_found
-    if @prev_sq
-      @prev_sq.force_output
-    end
-    @shown = true
-  end
-
-  def start
-    if @prev_sq &&
-       @prev_sq.prev_sq &&
-       @prev_sq.prev_sq.prev_sq
-      if @prev_sq.prev_sq.prev_sq.shown &&
-         !@prev_sq.prev_sq.shown &&
-         !@prev_sq.shown
-        puts '...'
-      end
-      @prev_sq.prev_sq.drop_prev
-    end
-    return @fmt.start if @shown
-  end
-
-  def output_data(s)
-    @content << s
-    return @fmt.output_data(s) if @shown
-    return if @prev_sq.content.start_with? @content
-    difference_found
-    @fmt.start
-    @fmt.output_data(@content)
-  end
-
-  def show_status(status)
-    @status = status
-    return @fmt.show_status(status) if @shown
-    return if @prev_sq.content == @content &&
-              @prev_sq.status.to_i == status.to_i
-    difference_found
-    @fmt.start
-    @fmt.output_data(@content)
-    @fmt.show_status(@status)
-  end
-
-  def last_linebreak
-    return @fmt.last_linebreak if @shown
-  end
-
-  def force_output
-    return if @shown
-    if @prev_sq &&
-       @prev_sq.prev_sq &&
-       @prev_sq.prev_sq.shown &&
-       !@prev_sq.shown
-      puts '...'
-    end
-    @shown = true
-    @fmt.start
-    @fmt.output_data(@content)
-    @fmt.show_status(@status)
-    @fmt.last_linebreak
-  end
 end
 
 if ARGV.empty?
