@@ -66,21 +66,17 @@ end
 
 def collect_commands
   commands = []
-  if $opt_all_ruby_bins
-    commands = $opt_all_ruby_bins
-  else
-    all_ruby_bin = File.join(File.dirname(File.expand_path(File.realpath(__FILE__))), 'bin')
-    if File.directory? all_ruby_bin
-      Dir.foreach(all_ruby_bin) {|n|
-        next if /\Aruby-[0-9]/ !~ File.basename(n)
-        next if commands.include? n
-        bin = "#{all_ruby_bin}/#{n}"
-        next if commands.include? bin
-        if File.file?(bin) && File.executable?(bin)
-          commands << bin
-        end
-      }
-    end
+  all_ruby_bin = File.join(File.dirname(File.expand_path(File.realpath(__FILE__))), 'bin')
+  if File.directory? all_ruby_bin
+    Dir.foreach(all_ruby_bin) {|n|
+      next if /\Aruby-[0-9]/ !~ File.basename(n)
+      next if commands.include? n
+      bin = "#{all_ruby_bin}/#{n}"
+      next if commands.include? bin
+      if File.file?(bin) && File.executable?(bin)
+        commands << bin
+      end
+    }
   end
   commands
 end
@@ -124,7 +120,7 @@ if ENV['ALL_RUBY_ADDBINS']
 end
 
 #p __LINE__
-commands = collect_commands
+commands = $opt_all_ruby_bins ? $opt_all_ruby_bins : collect_commands
 #p __LINE__
 commands = sort_by_name(commands)
 
