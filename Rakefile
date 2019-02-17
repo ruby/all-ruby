@@ -52,6 +52,7 @@ require 'fileutils'
 require 'json'
 require 'pp'
 require 'digest'
+require 'rbconfig'
 
 def show_help_message
   puts "\"rake all\" will install #{RubySource::TABLE.length} ruby"
@@ -825,4 +826,9 @@ task :dedup do
     end
   end
   puts
+end
+
+task :test do
+  test_files = Dir.glob('test/test_*.rb')
+  system(RbConfig.ruby, '-e' 'ARGV.each {|fn| load fn}', *test_files)
 end

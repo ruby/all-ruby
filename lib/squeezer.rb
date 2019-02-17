@@ -26,7 +26,7 @@ class Squeezer
       if @prev_sq.prev_sq.prev_sq.shown &&
          !@prev_sq.prev_sq.shown &&
          !@prev_sq.shown
-        puts '...'
+        @fmt.output_dots
       end
       @prev_sq.prev_sq.drop_prev
     end
@@ -63,7 +63,7 @@ class Squeezer
        @prev_sq.prev_sq &&
        @prev_sq.prev_sq.shown &&
        !@prev_sq.shown
-      puts '...'
+      @fmt.output_dots
     end
     @shown = true
     @fmt.start
