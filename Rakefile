@@ -57,7 +57,8 @@ require 'rbconfig'
 def show_help_message
   puts "\"rake all\" will install #{RubySource::TABLE.length} ruby"
   puts "\"rake list\" shows versions"
-  puts "\"rake sync\" updates versions"
+  puts "\"rake sync\" updates versions (for all-ruby developpers)"
+  puts "\"rake test\" runs test (for all-ruby developpers)"
 end
 
 URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
