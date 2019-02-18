@@ -274,6 +274,11 @@ class RubySource
     @h[:version] == version
   end
 
+  def version_between(v1, v2)
+    v = vercmp_key(@h[:version])
+    ((vercmp_key(v1) <=> v) <= 0) && ((v <=> vercmp_key(v2)) <= 0)
+  end
+
   def local_version_cmp(version)
     return nil if vercmp_major_key(@h[:version]) != vercmp_major_key(version)
     vercmp_key(@h[:version]) <=> vercmp_key(version)
@@ -377,7 +382,7 @@ class RubySource
     if local_version_between('1.9.1-preview2', '1.9.1-p0')
       patch srcdir, "cont-elif"
     end
-    if global_version_eq('1.8.5') ||
+    if version_between('1.8.5-preview3', '1.8.5-p231') ||
        local_version_le('1.8.6-p230') ||
        local_version_le('1.8.7-p22')
       patch srcdir, "math-define-erange"
@@ -397,7 +402,7 @@ class RubySource
        local_version_le('1.1b9_19')
       patch srcdir, 'glob-alloca'
     end
-    if local_version_le('0.95')
+    if version_between('0.69', '0.95')
       patch srcdir, 'glob-alloca2'
     end
     if local_version_le('0.55')
@@ -485,12 +490,12 @@ class RubySource
     if version_eq('0.69')
       patch srcdir, 'regex-re_match_2'
     end
-    if local_version_le('0.54')
+    if version_eq('0.54')
       patch srcdir, 'gnuglob-alloca2'
-    elsif local_version_le('0.65')
+    elsif version_between('0.55', '0.65')
       patch srcdir, 'gnuglob-alloca'
     end
-    if local_version_le('0.60')
+    if version_between('0.51', '0.60')
       patch srcdir, 'gnuglob-dirent'
     end
     if global_version_lt('1.8.0')
