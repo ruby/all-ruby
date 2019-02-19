@@ -144,10 +144,6 @@ def vercmp_major_key_str(fn)
   raise "unexpected version string: #{fn.inspect}"
 end
 
-def vercmp_major_key(fn)
-  vercmp_key(vercmp_major_key_str(fn))
-end
-
 class RubySource
 
   VERSIONS = Dir.glob("versions/*.json").map {|fn|
@@ -267,20 +263,16 @@ class RubySource
     ((vercmp_key(v1) <=> v) <= 0) && ((v <=> vercmp_key(v2)) <= 0)
   end
 
-  def global_version_cmp(version)
-    vercmp_major_key(@h[:version]) <=> vercmp_major_key(version)
+  def version_cmp(version)
+    vercmp_key(@h[:version]) <=> vercmp_key(version)
   end
 
-  def global_version_lt(version)
-    ret = global_version_cmp(version)
-    return nil if ret.nil?
-    ret < 0
+  def version_lt(version)
+    version_cmp(version) < 0
   end
 
-  def global_version_ge(version)
-    ret = global_version_cmp(version)
-    return nil if ret.nil?
-    ret >= 0
+  def version_ge(version)
+    version_cmp(version) >= 0
   end
 
   def run_command(tag, command, prefixdir)
@@ -320,7 +312,7 @@ class RubySource
   end
 
   def apply_workaround(srcdir)
-    unless global_version_ge('2.4.0')
+    unless version_ge('2.4.0')
       # OpenSSL 1.1.0 is supported since Ruby 2.4.0.
       dir = "#{build_reldir}/#{srcdir}/ext/openssl"
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
@@ -444,7 +436,7 @@ class RubySource
     if version_between('0.51', '0.60')
       patch srcdir, 'gnuglob-dirent'
     end
-    if global_version_lt('1.8.0')
+    if version_lt('1.8.0')
       :build_ruby32
     else
       :build_ruby
