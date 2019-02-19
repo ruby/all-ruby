@@ -124,40 +124,28 @@ def vercmp_key(n)
       end
     end
   }
+  # [1,8,2] < [1,8,2,-2] but [1,8,2,-2,0,...] < [1,8,2,0,...]
   10.times { ary << 0 }
   ary
 end
 
+def vercmp_major_key_str(fn)
+  pats = [
+    /\A0(?!\d)/,
+    /\A1\.1[a-d]/,
+    /\A1\.8\.[5-7](?!\d)/,
+    /\A1\.9\.[0-3](?!\d)/,
+    /\A2\.0\.0(?!\d)/,
+    /\A(\d+)\.(\d+)/,
+  ]
+  pats.each {|pat|
+    return $& if pat =~ fn
+  }
+  raise "unexpected version string: #{fn.inspect}"
+end
+
 def vercmp_major_key(fn)
-  case fn
-  when /\A0(\D|\z)/; 0
-  when /\A1\.0(\D|\z)/; 1
-  when /\A1\.1a/; 2
-  when /\A1\.1b/; 3
-  when /\A1\.1c/; 4
-  when /\A1\.1d/; 5
-  when /\A1\.2(\D|\z)/; 6
-  when /\A1\.3(\D|\z)/; 7
-  when /\A1\.4(\D|\z)/; 8
-  when /\A1\.6(\D|\z)/; 9
-  when /\A1\.8\.[0-4](\D|\z)/; 10
-  when /\A1\.8\.5(\D|\z)/; 11
-  when /\A1\.8\.6(\D|\z)/; 12
-  when /\A1\.8\.7(\D|\z)/; 13
-  when /\A1\.9\.0(\D|\z)/; 14
-  when /\A1\.9\.1(\D|\z)/; 15
-  when /\A1\.9\.2(\D|\z)/; 16
-  when /\A1\.9\.3(\D|\z)/; 17
-  when /\A2\.0(\D|\z)/; 18
-  when /\A2\.1(\D|\z)/; 19
-  when /\A2\.2(\D|\z)/; 20
-  when /\A2\.3(\D|\z)/; 21
-  when /\A2\.4(\D|\z)/; 22
-  when /\A2\.5(\D|\z)/; 23
-  when /\A2\.6(\D|\z)/; 24
-  when /\A(\d+)\.(\d+)/; $1.to_i * 1000 + $2.to_i
-  else -1
-  end
+  vercmp_key(vercmp_major_key_str(fn))
 end
 
 class RubySource
@@ -171,7 +159,7 @@ class RubySource
     next if h.has_key?(:enable) && !h[:enable]
     h.update make_entry(h[:relpath])
     h
-  }.compact.sort_by {|h| [vercmp_major_key(h[:version]), vercmp_key(h[:version])] }
+  }.compact.sort_by {|h| vercmp_key(h[:version]) }
 
   def self.dirs
     result = RubySource::TABLE.map {|h|
@@ -709,20 +697,9 @@ task 'sync' do
   }
 end
 
-def longest_common_substring_of ary
-  return ary[0].slice 0, ary.min_by(&:length).length.times {|i|
-    break i if ary.any? {|j|
-      break true if j[i] != ary[0][i]
-    }
-  }
-end
-
-RubySource::TABLE.chunk {|h| vercmp_major_key(h[:version]) }.
-  map {|_, hs| hs.map {|h| h[:relpath] } }.each do |versions|
+RubySource::TABLE.chunk {|h| vercmp_major_key_str(h[:version]) }.each do |str, hs|
+  versions = hs.map {|h| h[:relpath] }
   ary = versions.reject {|i| Hash === i }
-  str = longest_common_substring_of ary
-  str.sub!(%r{.+/ruby-}, '')
-  str.sub!(%r{-[\w.]*?$|\.$}, '')
   ary.map! {|v| hashize_version_entry(v) }
   ary.map! {|h| h[:relpath] }
   ary.map! {|r| make_entry(r) }
