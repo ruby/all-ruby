@@ -129,21 +129,6 @@ def vercmp_key(n)
   ary
 end
 
-def vercmp_major_key_str(fn)
-  pats = [
-    /\A0(?!\d)/,
-    /\A1\.1[a-d]/,
-    /\A1\.8\.[5-7](?!\d)/,
-    /\A1\.9\.[0-3](?!\d)/,
-    /\A2\.0\.0(?!\d)/,
-    /\A(\d+)\.(\d+)/,
-  ]
-  pats.each {|pat|
-    return $& if pat =~ fn
-  }
-  raise "unexpected version string: #{fn.inspect}"
-end
-
 class RubySource
 
   VERSIONS = Dir.glob("versions/*.json").map {|fn|
@@ -687,6 +672,21 @@ task 'sync' do
     relpath_list = hs.map {|h| h[:relpath] }
     update_versions relpath_list
   }
+end
+
+def vercmp_major_key_str(fn)
+  pats = [
+    /\A0(?!\d)/,
+    /\A1\.1[a-d]/,
+    /\A1\.8\.[5-7](?!\d)/,
+    /\A1\.9\.[0-3](?!\d)/,
+    /\A2\.0\.0(?!\d)/,
+    /\A(\d+)\.(\d+)/,
+  ]
+  pats.each {|pat|
+    return $& if pat =~ fn
+  }
+  raise "unexpected version string: #{fn.inspect}"
 end
 
 RubySource::TABLE.chunk {|h| vercmp_major_key_str(h[:version]) }.each do |str, hs|
