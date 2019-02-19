@@ -379,15 +379,14 @@ class RubySource
     if version_eq('1.9.3-p426')
       patch srcdir, 'signal-unistd'
     end
-    if local_version_between('1.9.1-preview2', '1.9.1-p0')
+    if version_between('1.9.1-preview2', '1.9.1-p0')
       patch srcdir, "cont-elif"
     end
-    if version_between('1.8.5-preview3', '1.8.5-p231') ||
-       local_version_le('1.8.6-p230') ||
-       local_version_le('1.8.7-p22')
+    if version_between('1.8.5-preview3', '1.8.6-p230') ||
+       version_between('1.8.7-preview1', '1.8.7-p22')
       patch srcdir, "math-define-erange"
     end
-    if local_version_between('1.3.3-990430', '1.3.3-990430')
+    if version_between('1.3.3-990430', '1.3.3-990430')
       patch srcdir, 'rbconfig-expand'
     end
     if version_eq('1.1d0')
@@ -396,28 +395,25 @@ class RubySource
     if version_eq('1.1b9_07')
       patch srcdir, 'instruby-dll'
     end
-    if local_version_ge('0.99.4-961224') ||
-       global_version_eq('1.0-961225') ||
-       global_version_eq('1.1a0') ||
-       local_version_le('1.1b9_19')
+    if version_between('0.99.4-961224', '1.1b9_19')
       patch srcdir, 'glob-alloca'
     end
     if version_between('0.69', '0.95')
       patch srcdir, 'glob-alloca2'
     end
-    if local_version_le('0.55')
+    if version_between('0.49', '0.55')
       patch srcdir, 'ruby-errno3'
-    elsif local_version_le('0.76')
+    elsif version_between('0.60', '0.76')
       patch srcdir, 'ruby-errno2'
     elsif version_eq('0.95')
       patch srcdir, 'ruby-errno'
     end
-    if local_version_le('0.95')
+    if version_between('0.49', '0.95')
       modify_file("#{build_reldir}/#{srcdir}/configure") {|content|
         content.gsub(/LDSHARED='ld'/, "LDSHARED='gcc -shared'")
       }
     end
-    if local_version_le('0.76')
+    if version_between('0.49', '0.76')
       modify_file("#{build_reldir}/#{srcdir}/configure") {|content|
         content.gsub(/^pow\(\)/, "pow(1.0, 1.0)")
       }
@@ -439,10 +435,10 @@ class RubySource
       File.rename "#{dir}/extconf.rb", "#{dir}/extconf.rb-" if File.exist? "#{dir}/extconf.rb"
       File.rename "#{dir}/MANIFEST", "#{dir}/MANIFEST-" if File.exist? "#{dir}/MANIFEST"
     end
-    if global_version_lt('1.1b0') || local_version_lt('1.1b9_19')
+    if version_between('0.49', '1.1b9_18')
       convert_varargs_to_stdarg "#{build_reldir}/#{srcdir}"
     end
-    if local_version_between('1.1b9_05', '1.1b9_09')
+    if version_between('1.1b9_05', '1.1b9_09')
       src = File.read(parse_y_fn)
       src.gsub!(/default:\n( *\})/) { "default: break;\n#{$1}" }
       File.write(parse_y_fn, src)
@@ -459,32 +455,32 @@ class RubySource
     if version_eq('1.1a4')
       patch srcdir, 'variable-break'
     end
-    if local_version_le('0.50')
+    if version_between('0.49', '0.50')
       patch srcdir, 'error-error2'
-    elsif local_version_le('0.76')
+    elsif version_between('0.51', '0.76')
       patch srcdir, 'error-error'
     end
-    if local_version_le('0.76')
+    if version_between('0.49', '0.76')
       modify_file("#{build_reldir}/#{srcdir}/io.c") {|content|
         content.gsub!(/->_gptr/, "->_IO_read_ptr")
         content.gsub!(/->_egptr/, "->_IO_read_end")
         content
       }
     end
-    if local_version_le('0.49')
+    if version_eq('0.49')
       patch srcdir, 'struct-va_end2'
-    elsif local_version_le('0.76')
+    elsif version_between('0.50', '0.76')
       patch srcdir, 'struct-va_end'
     end
-    if local_version_le('0.49')
+    if version_eq('0.49')
       patch srcdir, 'time-time2'
-    elsif local_version_le('0.76')
+    elsif version_between('0.50', '0.76')
       patch srcdir, 'time-time'
     end
     if version_eq('0.73')
       patch srcdir, 'makefile-assoc'
     end
-    if local_version_le('0.69')
+    if version_between('0.49', '0.69')
       patch srcdir, 'defines-nodbm'
     end
     if version_eq('0.69')
@@ -599,7 +595,7 @@ class RubySource
               'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
              'setarch', 'i686']
 
-    if local_version_le('0.60')
+    if version_between('0.49', '0.60')
       setup[0]['LIBS'] = '-lcrypt'
     end
 
