@@ -690,12 +690,7 @@ def vercmp_major_key_str(fn)
 end
 
 RubySource::TABLE.chunk {|h| vercmp_major_key_str(h[:version]) }.each do |str, hs|
-  versions = hs.map {|h| h[:relpath] }
-  ary = versions.reject {|i| Hash === i }
-  ary.map! {|v| hashize_version_entry(v) }
-  ary.map! {|h| h[:relpath] }
-  ary.map! {|r| make_entry(r) }
-  ary.map! {|h| h[:version] }
+  ary = hs.map {|h| h[:version] }
   ary.reverse!
   multitask "all-#{str}" => ary
   task "allseq-#{str}" => ary
