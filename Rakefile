@@ -421,6 +421,18 @@ class RubySource
     if version_between('0.51', '0.60')
       patch srcdir, 'gnuglob-dirent'
     end
+    if version_eq('2.4.0-preview1')
+      patch srcdir, 'inline-vm_getivar'
+    end
+    if version_between('0.99.4-961224', '1.6.8')
+      patch srcdir, 'glibc-stdio'
+    elsif version_eq('0.95')
+      patch srcdir, 'glibc-stdio2'
+    elsif version_eq('0.76')
+      patch srcdir, 'glibc-stdio3'
+    elsif version_between('0.69', '0.73-950413')
+      patch srcdir, 'glibc-stdio4'
+    end
     if version_lt('1.8.0')
       :build_ruby32
     else
