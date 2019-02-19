@@ -279,44 +279,6 @@ class RubySource
     ((vercmp_key(v1) <=> v) <= 0) && ((v <=> vercmp_key(v2)) <= 0)
   end
 
-  def local_version_cmp(version)
-    return nil if vercmp_major_key(@h[:version]) != vercmp_major_key(version)
-    vercmp_key(@h[:version]) <=> vercmp_key(version)
-  end
-
-  def local_version_lt(version)
-    ret = local_version_cmp(version)
-    return nil if ret.nil?
-    ret < 0
-  end
-
-  def local_version_le(version)
-    ret = local_version_cmp(version)
-    return nil if ret.nil?
-    ret <= 0
-  end
-
-  def local_version_ge(version)
-    ret = local_version_cmp(version)
-    return nil if ret.nil?
-    ret >= 0
-  end
-
-  def local_version_between(v1, v2)
-    # inclusive.
-    ret1 = local_version_cmp(v1)
-    return nil if ret1.nil?
-    ret2 = local_version_cmp(v2)
-    return nil if ret2.nil?
-    return false if ret1 < 0
-    return false if ret2 > 0
-    true
-  end
-
-  def global_version_eq(version)
-    vercmp_major_key(@h[:version]) == vercmp_major_key(version)
-  end
-
   def global_version_cmp(version)
     vercmp_major_key(@h[:version]) <=> vercmp_major_key(version)
   end
