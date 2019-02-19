@@ -1,0 +1,13 @@
+--- io.c-	2019-02-20 07:50:16.859744610 +0900
++++ io.c	2019-02-20 07:50:19.171732362 +0900
+@@ -101,8 +101,8 @@
+ static int init_p = 0, next_p = 0, first_p = 1;
+ static VALUE lineno;
+ 
+-#ifdef _STDIO_USES_IOSTREAM  /* GNU libc */
+-#  ifdef _IO_fpos_t
++#if 1  /* GNU libc */
++#  if 1
+ #    define READ_DATA_PENDING(fp) ((fp)->_IO_read_ptr != (fp)->_IO_read_end)
+ #  else
+ #    define READ_DATA_PENDING(fp) ((fp)->_gptr < (fp)->_egptr)

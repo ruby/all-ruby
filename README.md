@@ -18,6 +18,13 @@ installed as follows.
         zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.2:i386 \
         libreadline7:i386 libffi6:i386
 
+For Debian GNU/Linux buster/sid:
+
+    % sudo apt-get build-dep ruby2.5
+    % sudo apt install rake gcc-multilib \
+        zlib1g:i386 libncurses5:i386 libgdbm6:i386 libssl1.1:i386 \
+        libreadline7:i386 libffi6:i386
+
 ## Usage
 
 This software provides Rakefile and "rake all" downloads and builds
