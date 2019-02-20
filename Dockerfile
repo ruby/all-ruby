@@ -25,14 +25,14 @@ RUN apt-get upgrade    \
 
 WORKDIR /all-ruby
 
-ADD Rakefile /all-ruby/
-ADD lib/ruby_version.rb /all-ruby/lib/
-ADD patch /all-ruby/patch/
+COPY Rakefile /all-ruby/
+COPY lib/ruby_version.rb /all-ruby/lib/
+COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 ARG j=1
 
-ADD versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
+COPY versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
 RUN rake -j ${j} all-0     && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/0*
 RUN rake -j ${j} all-1.0   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/1.0*
 RUN rake -j ${j} all-1.1a  && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/1.1a*
@@ -55,18 +55,18 @@ RUN rake -j ${j} all-2.0.0 && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -
 RUN rake -j ${j} all-2.1   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/2.1*
 RUN rake -j ${j} all-2.2   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/2.2*
 
-ADD versions/2.3* /all-ruby/versions/
+COPY versions/2.3* /all-ruby/versions/
 RUN rake -j ${j} all-2.3   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/2.3*
 
-ADD versions/2.4* /all-ruby/versions/
+COPY versions/2.4* /all-ruby/versions/
 RUN rake -j ${j} all-2.4   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/2.4*
 
-ADD versions/2.5* /all-ruby/versions/
+COPY versions/2.5* /all-ruby/versions/
 RUN rake -j ${j} all-2.5   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/2.5*
 
-ADD versions/2.6* /all-ruby/versions/
+COPY versions/2.6* /all-ruby/versions/
 RUN rake -j ${j} all-2.6   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true -makeresultsfile false build/2.6*
 
 RUN rm -rf Rakefile versions/ patch/
-ADD lib/* /all-ruby/lib/
-ADD all-ruby /all-ruby/
+COPY lib/* /all-ruby/lib/
+COPY all-ruby /all-ruby/
