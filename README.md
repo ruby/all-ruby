@@ -77,6 +77,22 @@ all-ruby without arguments shows help message for all-ruby script.
       ALL_RUBY_ADDBINS=./ruby               run specified commands additionaly
       ALL_RUBY_SHOW_DUP=yes                 don't suppress duplicated output
 
+## Docker
+
+Dockerfile is provided to generate a docker image containing
+ruby binaries built by the Rakefile.
+
+Pre-built docker image can be used as follows:
+
+    % docker pull rubylang/all-ruby
+    % docker run --rm -t rubylang/all-ruby /all-ruby/all-ruby -v
+
+If you want to build a docker image yourself,
+you can use following command.
+(j=12 specifies -j option for rake.  The default value is 1.)
+
+    % docker build ./ --build-arg j=12 -t my-all-ruby
+
 ## Links
 
 - https://github.com/akr/all-ruby
