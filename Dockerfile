@@ -4,24 +4,24 @@ ARG variant=-slim
 FROM ${os}:${version}${variant}
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN dpkg --add-architecture i386
 ARG mirror=http://deb.debian.org/debian
 ARG version
-RUN echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list
-RUN echo $'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot
-RUN echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache
-RUN apt-get update
 ARG system_ruby=ruby2.3
-RUN apt-get install build-essential \
-                    gcc-multilib \
-                    bison \
-                    rdfind \
-                    lib${system_ruby}:amd64 \
-                    lib${system_ruby}:i386 
-RUN apt-get build-dep ${system_ruby} 
-RUN apt-get upgrade    \
- && apt-get autoremove \
- && apt-get clean
+
+RUN dpkg --add-architecture i386 \
+  && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
+  && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
+  && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
+  && apt-get update \
+  && apt-get install \
+      build-essential \
+      gcc-multilib \
+      bison \
+      rdfind \
+      lib${system_ruby}:amd64 \
+      lib${system_ruby}:i386 \
+  && apt-get build-dep ${system_ruby} \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /all-ruby
 
