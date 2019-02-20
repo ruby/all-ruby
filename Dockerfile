@@ -26,12 +26,13 @@ RUN apt-get upgrade    \
 WORKDIR /all-ruby
 
 ADD Rakefile /all-ruby/
+ADD lib/ruby_version.rb /all-ruby/lib/
 ADD patch /all-ruby/patch/
 RUN rake setup_build
 
 ARG j=1
 
-ADD versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions
+ADD versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
 RUN rake -j ${j} all-0     && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true build/0*
 RUN rake -j ${j} all-1.0   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true build/1.0*
 RUN rake -j ${j} all-1.1a  && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true build/1.1a*
@@ -67,5 +68,5 @@ ADD versions/2.6* /all-ruby/versions/
 RUN rake -j ${j} all-2.6   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -makehardlinks true build/2.6*
 
 RUN rm -rf result.txt Rakefile versions/ patch/
-ADD lib/* /all-ruby/lib
+ADD lib/* /all-ruby/lib/
 ADD all-ruby /all-ruby/
