@@ -33,7 +33,7 @@ COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 ARG j=1
-ARG rm_files="DIST build/*/log build/*/ruby*/"
+ARG rm_files="DIST build/*/log build/*/ruby*/ build/*/man build/*/share/man build/*/share/doc build/*/share/ri"
 ARG rdfind_opts="-makehardlinks true -makeresultsfile false"
 
 COPY versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
