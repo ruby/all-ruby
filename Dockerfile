@@ -1,12 +1,14 @@
 ARG os=debian
 ARG version=stretch
 ARG variant=-slim
-FROM ${os}:${version}${variant}
-
-ENV DEBIAN_FRONTEND=noninteractive
 ARG mirror=http://deb.debian.org/debian
-ARG version
 ARG system_ruby=ruby2.3
+
+FROM ${os}:${version}${variant}
+ENV DEBIAN_FRONTEND=noninteractive
+ARG mirror
+ARG version
+ARG system_ruby
 
 RUN dpkg --add-architecture i386 \
   && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
@@ -70,3 +72,34 @@ RUN rake -j ${j} all-2.6   && rm -rf DIST build/*/log build/*/ruby*/ && rdfind -
 RUN rm -rf Rakefile versions/ patch/
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
+
+FROM ${os}:${version}${variant}
+ARG mirror
+ARG version
+ARG system_ruby
+
+RUN dpkg --add-architecture i386 \
+  && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
+  && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
+  && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
+  && apt-get update \
+  && apt-get install \
+      libc6:i386 \
+      libffi6:i386 \
+      libgcc1:i386 \
+      libgdbm3:i386 \
+      libncurses5:i386 \
+      libreadline7:i386 \
+      libssl1.0.2:i386 \
+      zlib1g:i386 \
+      libffi6:amd64 \
+      libgdbm3:amd64 \
+      libncurses5:amd64 \
+      libreadline7:amd64 \
+      libssl1.0.2:amd64 \
+      zlib1g:amd64 \
+      ${system_ruby} \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=0 /all-ruby/ /all-ruby
+COPY --from=0 /build-all-ruby/ /build-all-ruby
