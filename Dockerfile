@@ -80,6 +80,8 @@ ARG mirror
 ARG version
 ARG system_ruby
 
+# gcc is required for mjit of ruby 2.6
+
 RUN dpkg --add-architecture i386 \
   && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
   && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
@@ -100,6 +102,7 @@ RUN dpkg --add-architecture i386 \
       libreadline7:amd64 \
       libssl1.0.2:amd64 \
       zlib1g:amd64 \
+      gcc \
       ${system_ruby} \
   && rm -rf /var/lib/apt/lists/*
 
