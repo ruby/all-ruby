@@ -89,9 +89,14 @@ Pre-built docker image can be used as follows:
 
 If you want to build a docker image yourself,
 you can use following command.
-(j=12 specifies -j option for rake.  The default value is 1.)
+This uses your CPUs parallel.
 
-    % docker build ./ --build-arg j=12 -t my-all-ruby
+    % docker build ./ -t my-all-ruby
+
+If you want to use only n CPUs, build argument j=n can be used.
+(--cpuset-cpus option of "docker build" is also usable.)
+
+    % docker build ./ --build-arg j=1 -t my-all-ruby
 
 ## Links
 
