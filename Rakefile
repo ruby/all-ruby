@@ -192,7 +192,7 @@ class RubySource
       }
     end
     # Assume recent GNU tar which recognize compression automatically.
-    system "tar", "xf", filename, :chdir => build_reldir
+    system "tar", "xf", filename, '--no-same-owner', :chdir => build_reldir
     ary = Dir.glob("#{build_reldir}/*/ruby.c")
     if ary.empty?
       raise "no ruby.c found."
