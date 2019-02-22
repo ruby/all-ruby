@@ -76,6 +76,7 @@ COPY all-ruby /all-ruby/
 RUN rm -rf Rakefile versions/ patch/
 RUN rm -rf DIST build/*/log build/*/ruby*/
 RUN rm -rf build/*/man build/*/share/man build/*/share/doc build/*/share/ri
+RUN rm -f build/*/lib/libruby-static.a
 RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
 
 FROM ${os}:${version}${variant}
