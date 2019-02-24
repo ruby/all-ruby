@@ -74,21 +74,21 @@ RUN rake -j ${j} all-2.6
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
 
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN rm -rf Rakefile versions/ patch/
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN rm -rf DIST build/*/log build/*/ruby*/
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN rm -rf build/*/man build/*/share/man build/*/share/doc build/*/share/ri
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN rm -f build/*/lib/libruby-static.a
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN rm -f build/*/bin/gcc build/*/bin/cc
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
-RUN du -s /build-all-ruby
+#RUN du -s /build-all-ruby
 
 FROM ${os}:${version}${variant}
 ARG mirror
