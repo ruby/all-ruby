@@ -85,7 +85,7 @@ ruby binaries built by the Rakefile.
 Pre-built docker image can be used as follows:
 
     % docker pull rubylang/all-ruby
-    % docker run --rm rubylang/all-ruby /all-ruby/all-ruby -v
+    % docker run --rm rubylang/all-ruby ./all-ruby -v
 
 If you want to build a docker image yourself,
 you can use following command.
