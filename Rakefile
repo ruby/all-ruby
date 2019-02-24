@@ -500,7 +500,7 @@ class RubySource
       File.chmod(0755, "#{prefix}/bin/#{cc_bin}")
     }
 
-    setup = [{'CFLAGS'=>'-g -O0',
+    setup = [{'CFLAGS'=>'-Os',
               'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
              'setarch', 'i686']
 
@@ -528,7 +528,7 @@ class RubySource
     prefix = File.realpath(build_reldir)
     print "build #{version}\n"
 
-    command = ["./configure", "--prefix=#{prefix}", :chdir => "#{build_reldir}/#{srcdir}"]
+    command = ["./configure", "--prefix=#{prefix}", 'CFLAGS=-Os', 'optflags=-Os', 'debugflags=', :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("configure", command, prefix)
       raise "fail configure #{version}"
     end
@@ -671,12 +671,21 @@ def vercmp_major_key_str(fn)
   raise "unexpected version string: #{fn.inspect}"
 end
 
+all_first = []
+all_latest = []
 RubySource::TABLE.chunk {|h| vercmp_major_key_str(h[:version]) }.each do |str, hs|
   ary = hs.map {|h| h[:version] }
+  all_first << ary.first
+  all_latest << ary.last
   ary.reverse!
   multitask "all-#{str}" => ary
   task "allseq-#{str}" => ary
 end
+
+multitask "all-first" => all_first
+task "allseq-first" => all_first
+multitask "all-latest" => all_latest
+task "allseq-latest" => all_latest
 
 task :test do
   test_files = Dir.glob('test/test_*.rb')
