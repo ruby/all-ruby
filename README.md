@@ -57,6 +57,13 @@ all-ruby script runs all ruby binaries.
     ruby-1.3.4-990611     "1.3.4"
     ...
     ruby-2.6.1            "2.6.1"
+    % ALL_RUBY_SINCE=ruby-1.6 all-ruby -e 'p 0.class'
+    ruby-1.6.0            Fixnum
+    ...
+    ruby-2.3.8            Fixnum
+    ruby-2.4.0-preview1   Integer
+    ...
+    ruby-2.6.1            Integer
 
 ## Documentation
 
