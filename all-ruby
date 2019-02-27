@@ -34,21 +34,31 @@ require_relative 'lib/formatter'
 require_relative 'lib/squeezer'
 require_relative 'lib/ruby_version'
 
+def find_commands(bins)
+  commands = []
+  all_ruby_bin = File.join(File.dirname(File.realpath(__FILE__)), 'bin')
+  bins.each {|n|
+    bin = "#{all_ruby_bin}/#{n}"
+    if File.file?(bin) && File.executable?(bin)
+      commands << bin
+    else
+      STDERR.puts "not found: #{bin}"
+    end
+  }
+  commands.uniq
+end
+
 def collect_commands
   commands = []
-  all_ruby_bin = File.join(File.dirname(File.expand_path(File.realpath(__FILE__))), 'bin')
-  if File.directory? all_ruby_bin
-    Dir.foreach(all_ruby_bin) {|n|
-      next if /\Aruby-[0-9]/ !~ File.basename(n)
-      next if commands.include? n
-      bin = "#{all_ruby_bin}/#{n}"
-      next if commands.include? bin
-      if File.file?(bin) && File.executable?(bin)
-        commands << bin
-      end
-    }
-  end
-  commands
+  all_ruby_bin = File.join(File.dirname(File.realpath(__FILE__)), 'bin')
+  Dir.foreach(all_ruby_bin) {|n|
+    next if /\Aruby-[0-9]/ !~ File.basename(n)
+    bin = "#{all_ruby_bin}/#{n}"
+    if File.file?(bin) && File.executable?(bin)
+      commands << bin
+    end
+  }
+  commands.uniq
 end
 
 def sort_by_name(commands)
@@ -90,7 +100,9 @@ if ENV['ALL_RUBY_ADDBINS']
 end
 
 #p __LINE__
-commands = $opt_all_ruby_bins ? $opt_all_ruby_bins : collect_commands
+commands = $opt_all_ruby_bins ?
+  find_commands($opt_all_ruby_bins) :
+  collect_commands
 #p __LINE__
 commands = sort_by_name(commands)
 
@@ -99,13 +111,8 @@ if $opt_all_ruby_since
   commands.reject! {|n| (vercmp_key(File.basename(n).sub(/\Aruby-/, '')) <=> version_since) < 0 }
 end
 
-num_last_commands = 1
-$opt_all_ruby_addbins.each {|bin|
-  if File.file?(bin) && File.executable?(bin)
-    commands << bin
-    num_last_commands += 1
-  end
-}
+num_additional_commands = $opt_all_ruby_addbins.length
+commands.concat $opt_all_ruby_addbins
 
 if commands.empty?
   puts "no ruby versions found\n"
@@ -114,7 +121,12 @@ end
 
 titles = {}
 titles_rev = {}
-commands.each {|n|
+commands.each_with_index {|n, i|
+  if commands.length - num_additional_commands <= i
+    titles[n] = n
+    titles_rev[n] = n
+    next
+  end
   m = File.basename(n)
   if !titles_rev.has_key?(m)
     titles[n] = m
@@ -151,5 +163,5 @@ commands.each_index {|i|
   sq.last_linebreak
   prev_sq = sq
 
-  sq.force_output if commands.size - num_last_commands <= i
+  sq.force_output if commands.size - (num_additional_commands+1) <= i
 }
