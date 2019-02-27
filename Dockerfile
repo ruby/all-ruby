@@ -121,7 +121,7 @@ RUN dpkg --add-architecture i386 \
       ${system_ruby} \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=0 /all-ruby/ /all-ruby
 COPY --from=0 /build-all-ruby/ /build-all-ruby
+COPY --from=0 /all-ruby/ /all-ruby
 
 WORKDIR /all-ruby
