@@ -671,12 +671,20 @@ def vercmp_major_key_str(fn)
   raise "unexpected version string: #{fn.inspect}"
 end
 
+all_first = []
+all_last = []
 RubySource::TABLE.chunk {|h| vercmp_major_key_str(h[:version]) }.each do |str, hs|
   ary = hs.map {|h| h[:version] }
+  all_first << ary.first
+  all_last << ary.last
   ary.reverse!
   multitask "all-#{str}" => ary
   task "allseq-#{str}" => ary
 end
+multitask "all-first" => all_first
+task "allseq-first" => all_first
+multitask "all-last" => all_last
+task "allseq-last" => all_last
 
 task :test do
   test_files = Dir.glob('test/test_*.rb')
