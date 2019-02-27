@@ -93,6 +93,9 @@ Pre-built docker image can be used as follows:
 
     % docker pull rubylang/all-ruby
     % docker run --rm rubylang/all-ruby ./all-ruby -v
+    % docker run --rm -e 'ALL_RUBY_SINCE=ruby-2.0' \
+        -e 'ALL_RUBY_ADDBINS=/usr/bin/ruby' \
+	rubylang/all-ruby ./all-ruby -e 'p 0.class'
 
 If you want to build a docker image yourself,
 you can use following command.
