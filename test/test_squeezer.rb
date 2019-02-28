@@ -6,8 +6,7 @@ require_relative '../lib/squeezer'
 
 class TestSqueezer < Test::Unit::TestCase
   def test_end_with_prefix
-    system("true")
-    status = $?
+    status = nil
     out = StringIO.new
     prev_sq = sq = nil
     3.times {|n|

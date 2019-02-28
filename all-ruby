@@ -146,19 +146,30 @@ commands.each_index {|i|
   sq = Squeezer.new(prev_sq, fmt)
   sq.start
   r, w = IO.pipe
-  pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
+  status = nil
+  begin
+    pid = spawn({'RUBY'=>n}, [n, n], *ARGV, STDOUT=>w, STDERR=>w)
+  rescue SystemCallError
+    status = $!.message
+  end
   w.close
-  loop {
-    begin
-      s = r.readpartial(4096)
-    rescue EOFError
-      break
+  if !status
+    loop {
+      begin
+        s = r.readpartial(4096)
+      rescue EOFError
+        break
+      end
+      sq.output_data s
+    }
+    r.close
+    Process.wait pid
+    if $?.success?
+      status = nil
+    else
+      status = $?.to_s.sub(/\Apid \d+ /, '')
     end
-    sq.output_data s
-  }
-  r.close
-  Process.wait pid
-  status = $?
+  end
   sq.show_status status
   sq.last_linebreak
   prev_sq = sq

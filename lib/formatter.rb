@@ -32,12 +32,12 @@ class Formatter
   end
 
   def show_status(status)
-    if status.to_i != 0
+    if !status.nil?
       if !@beginning
         @out.puts if !@after_newline
         @out.print ' ' * (@indent_len-4)
       end
-      @out.puts status.inspect
+      @out.puts status
       @after_newline = true
     end
   end

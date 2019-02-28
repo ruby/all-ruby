@@ -46,7 +46,7 @@ class Squeezer
     @status = status
     return @fmt.show_status(status) if @shown
     return if @prev_sq.content == @content &&
-              @prev_sq.status.to_i == status.to_i
+              @prev_sq.status == status
     difference_found
     @fmt.start
     @fmt.output_data(@content)
