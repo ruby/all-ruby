@@ -66,6 +66,9 @@ end
 URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
 #URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
+# 'rake sync' checks the tarballs in the directories after RUBY_EOL_VERSION.
+RUBY_EOL_VERSION = '2.3'
+
 def make_entry(relpath)
   uri = URI_BASE + relpath
   dir, fn = File.split(relpath)
@@ -112,27 +115,36 @@ class RubySource
     h
   }.compact.sort_by {|h| vercmp_key(h[:version]) }
 
-  def self.dirs
+  def self.reldirs
     result = RubySource::TABLE.map {|h|
-      h[:uri].sub(%r{/[^/]*\z}, '/')
+      h[:dir]
     }.uniq
     case URI_BASE
     when /\A(http:|https:)/
       index = URI(URI_BASE).read
       lst = []
-      index.scan(%r{href="(\d\.\d)/"}) {
+      index.scan(%r{href="(?:/pub/ruby/)?(\d\.\d)/"}) {
         lst << $1
       }
     else
       raise "unexpected URI_BASE scheme: #{URI_BASE} (http/https required)"
     end
     lst.each {|n|
-      uri = URI_BASE + n + "/"
-      next if result.include? uri
-      #puts "New directory found: #{uri}"
-      result << uri
+      next if result.include? n
+      #puts "New directory found: #{n}"
+      result << n
     }
+    #result.map! {|n| uri = URI_BASE + n + "/" }
+    #puts result
     result
+  end
+
+  def self.reldirs_after_eol
+    reldirs.reject {|n| (vercmp_key(n) <=> vercmp_key(RUBY_EOL_VERSION)) <= 0 }
+  end
+
+  def self.uris_after_eol
+    reldirs_after_eol.map {|n| uri = URI_BASE + n + "/" }
   end
 
   def self.version_lookup(version)
@@ -645,10 +657,10 @@ def update_versions(relpath_list)
 end
 
 task 'sync' do
-  dirs = RubySource.dirs
-  dirs.reverse_each {|dir|
-    puts dir
-    index_html = URI(dir).read
+  uris = RubySource.uris_after_eol
+  uris.reverse_each {|uri|
+    puts uri
+    index_html = URI(uri).read
     hs = extract_entries(index_html)
     hs = filter_suffix(hs)
     relpath_list = hs.map {|h| h[:relpath] }
