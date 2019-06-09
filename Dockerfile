@@ -71,6 +71,9 @@ RUN rake -j ${j} all-2.5
 COPY versions/2.6* /all-ruby/versions/
 RUN rake -j ${j} all-2.6
 
+COPY versions/2.7* /all-ruby/versions/
+RUN rake -j ${j} all-2.7
+
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
 
