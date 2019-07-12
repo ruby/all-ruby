@@ -5,7 +5,7 @@ Also, all-ruby script runs all ruby binaries with same arguments.
 
 ## Platform
 
-This software is developed on Debian GNU/Linux 9 (stretch) amd64.
+This software is developed on Debian GNU/Linux 10 (buster) amd64.
 
 However Ruby doesn't support 64 bit platform until ruby 1.8.0.
 So, the older ruby needs 32 bit development tools which can be
@@ -13,16 +13,16 @@ installed as follows.
 
     % sudo dpkg --add-architecture i386
     % sudo apt update
-    % sudo apt-get build-dep ruby2.3
-    % sudo apt install rake gcc-multilib \
-        zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.2:i386 \
-        libreadline7:i386 libffi6:i386
-
-For Debian GNU/Linux buster/sid:
-
     % sudo apt-get build-dep ruby2.5
     % sudo apt install rake gcc-multilib \
         zlib1g:i386 libncurses5:i386 libgdbm6:i386 libssl1.1:i386 \
+        libreadline7:i386 libffi6:i386
+
+For Debian GNU/Linux 9 (stretch) :
+
+    % sudo apt-get build-dep ruby2.3
+    % sudo apt install rake gcc-multilib \
+        zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.2:i386 \
         libreadline7:i386 libffi6:i386
 
 ## Usage
@@ -44,26 +44,33 @@ all-ruby script runs all ruby binaries.
 
     % ./all-ruby -e 'p RUBY_VERSION'
     ruby-0.49             -e:1: syntax error
-                      #<Process::Status: pid 18425 exit 1>
-    ...
+		      exit 1
+    ruby-0.50             -e:1: syntax error
+		      exit 1
     ruby-0.51             -e:1: undefined method `p' for "main"(Object)
-                      #<Process::Status: pid 18427 exit 1>
+		      exit 1
+    ruby-0.54             -e:1:in method `p': undefined method `p' for "main"(Object)
+		      exit 1
+    ruby-0.55             -e:1: undefined method `p' for "main"(Object)
+		      exit 1
     ...
+    ruby-0.65             -e:1: undefined method `p' for "main"(Object)
+		      exit 1
     ruby-0.69             -e:1: Uninitialized constant RUBY_VERSION
-                      #<Process::Status: pid 18433 exit 1>
+		      exit 1
     ...
-    ruby-1.3.4-990531     /tmp/rbLIcgCm:1: uninitialized constant RUBY_VERSION (NameError)
-                      #<Process::Status: pid 18958 exit 1>
+    ruby-1.3.4-990531     /tmp/rbHMsENn:1: uninitialized constant RUBY_VERSION (NameError)
+		      exit 1
     ruby-1.3.4-990611     "1.3.4"
     ...
-    ruby-2.6.1            "2.6.1"
+    ruby-2.7.0-preview1   "2.7.0"
     % ALL_RUBY_SINCE=ruby-1.6 all-ruby -e 'p 0.class'
     ruby-1.6.0            Fixnum
     ...
     ruby-2.3.8            Fixnum
     ruby-2.4.0-preview1   Integer
     ...
-    ruby-2.6.1            Integer
+    ruby-2.7.0-preview1   Integer
 
 ## Documentation
 
