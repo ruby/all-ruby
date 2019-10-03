@@ -1,0 +1,6 @@
+{
+  "relpath":"2.4/ruby-2.4.8.tar.xz",
+  "enable":false,
+  "comment":"packaging issue [Bug #16197]"
+}
+
