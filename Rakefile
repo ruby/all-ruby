@@ -51,7 +51,6 @@ require 'open-uri'
 require 'fileutils'
 require 'json'
 require 'pp'
-require 'digest'
 require 'rbconfig'
 
 require_relative 'lib/ruby_version'
