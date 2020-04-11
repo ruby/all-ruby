@@ -56,7 +56,7 @@ URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
 #URI_BASE = 'ftp://ftp.ruby-lang.org/pub/ruby/'
 
 # 'rake sync' checks the tarballs in the directories after RUBY_EOL_VERSION.
-RUBY_EOL_VERSION = '2.3'
+RUBY_EOL_VERSION = '2.4'
 
 def make_entry(relpath)
   uri = URI_BASE + relpath
