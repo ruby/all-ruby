@@ -1,8 +1,8 @@
 ARG os=debian
-ARG version=stretch
+ARG version=buster
 ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
-ARG system_ruby=ruby2.3
+ARG system_ruby=ruby2.5
 
 FROM ${os}:${version}${variant}
 ENV DEBIAN_FRONTEND=noninteractive
@@ -112,16 +112,16 @@ RUN dpkg --add-architecture i386 \
       libc6:i386 \
       libffi6:i386 \
       libgcc1:i386 \
-      libgdbm3:i386 \
+      libgdbm6:i386 \
       libncurses5:i386 \
       libreadline7:i386 \
-      libssl1.0.2:i386 \
+      libssl1.1:i386 \
       zlib1g:i386 \
       libffi6:amd64 \
-      libgdbm3:amd64 \
+      libgdbm6:amd64 \
       libncurses5:amd64 \
       libreadline7:amd64 \
-      libssl1.0.2:amd64 \
+      libssl1.1:amd64 \
       zlib1g:amd64 \
       gcc \
       ${system_ruby} \
