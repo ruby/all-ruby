@@ -57,7 +57,7 @@ URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
 
 # 'rake sync' checks the tarballs in the directories after RUBY_EOL_VERSION.
 # https://www.ruby-lang.org/en/downloads/branches/
-RUBY_EOL_VERSION = '2.4'
+RUBY_EOL_VERSION = '2.5'
 
 def make_entry(relpath)
   uri = URI_BASE + relpath
