@@ -1,8 +1,8 @@
 ARG os=debian
-ARG version=buster
+ARG version=bullseye
 ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
-ARG system_ruby=ruby2.5
+ARG system_ruby=ruby2.7
 
 FROM ${os}:${version}${variant}
 ENV DEBIAN_FRONTEND=noninteractive
@@ -119,17 +119,17 @@ RUN dpkg --add-architecture i386 \
   && apt-get update \
   && apt-get install \
       libc6:i386 \
-      libffi6:i386 \
+      libffi7:i386 \
       libgcc1:i386 \
       libgdbm6:i386 \
       libncurses5:i386 \
-      libreadline7:i386 \
+      libreadline8:i386 \
       libssl1.1:i386 \
       zlib1g:i386 \
-      libffi6:amd64 \
+      libffi7:amd64 \
       libgdbm6:amd64 \
       libncurses5:amd64 \
-      libreadline7:amd64 \
+      libreadline8:amd64 \
       libssl1.1:amd64 \
       zlib1g:amd64 \
       gcc \
