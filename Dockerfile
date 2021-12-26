@@ -78,7 +78,7 @@ COPY versions/3.0* /all-ruby/versions/
 RUN rake -j ${j} all-3.0
 
 COPY versions/3.1* /all-ruby/versions/
-RUN rake -j ${j} 3.1.0-preview1
+RUN rake -j ${j} all-3.1
 
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
