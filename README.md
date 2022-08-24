@@ -77,7 +77,7 @@ all-ruby script runs all ruby binaries.
 rake without arguments shows the help message for the Rakefile.
 
     % rake
-    "rake all" will install 338 ruby
+    "rake all" will install 384 ruby
     "rake list" shows versions
     "rake sync" updates versions
 
