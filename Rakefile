@@ -134,7 +134,7 @@ class RubySource
   end
 
   def self.uris_after_eol
-    reldirs_after_eol.map {|n| uri = URI_BASE + n + "/" }
+    reldirs_after_eol.map {|n| URI_BASE + n + "/" }
   end
 
   def self.version_lookup(version)
