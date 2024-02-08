@@ -35,7 +35,7 @@ RUN rake setup_build
 # rake -j interpret non-numeric argument as number of CPUs plus 3.
 ARG j=numcpu_plus_alpha
 
-COPY versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
+COPY versions/0.* versions/1.* versions/2.0.0* /all-ruby/versions/
 RUN rake -j ${j} all-0 all-1.0 all-1.1a all-1.1b all-1.1c all-1.1d all-1.8 all-1.8.5
 RUN rake -j ${j} all-2.0.0
 
@@ -79,7 +79,7 @@ RUN rake setup_build
 # rake -j interpret non-numeric argument as number of CPUs plus 3.
 ARG j=numcpu_plus_alpha
 
-COPY versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
+COPY versions/1.* versions/2.1* versions/2.2* /all-ruby/versions/
 RUN rake -j ${j} all-1.2 all-1.3 all-1.4 all-1.6
 RUN rake -j ${j} all-1.8.6
 RUN rake -j ${j} all-1.8.7
