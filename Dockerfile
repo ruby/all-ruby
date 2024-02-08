@@ -68,6 +68,7 @@ RUN dpkg --add-architecture i386 \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=0 /build-all-ruby/ /build-all-ruby
+COPY --from=0 /all-ruby/ /all-ruby
 
 WORKDIR /all-ruby
 
@@ -109,6 +110,7 @@ RUN rm -rf DIST build/*/log build/*/ruby*/
 RUN rm -rf build/*/man build/*/share/man build/*/share/doc build/*/share/ri
 RUN rm -f build/*/lib/libruby-static.a
 RUN rm -f build/*/bin/gcc build/*/bin/cc
+
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
 
