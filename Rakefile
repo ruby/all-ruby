@@ -558,12 +558,13 @@ end
 
 task :setup_build do
   if File.symlink? "build"
-    raise "'build' symlink already exist."
+    puts "'build' symlink already exist."
+  else
+    build_dirname = "../build-all-ruby"
+    Dir.mkdir build_dirname
+    File.symlink build_dirname, "build"
+    puts "symlink created: build -> #{build_dirname}"
   end
-  build_dirname = "../build-all-ruby"
-  Dir.mkdir build_dirname
-  File.symlink build_dirname, "build"
-  puts "symlink created: build -> #{build_dirname}"
 end
 
 multitask :all => RubySource::TABLE.map {|h| h[:version] }.reverse
