@@ -4,8 +4,6 @@ ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
 ARG system_ruby=ruby2.7
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Build for 0.*, 1.0*, 1.1*, 1.8 and 1.8.5
 FROM debian:buster-slim
 ENV DEBIAN_FRONTEND=noninteractive
@@ -56,6 +54,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
 
 FROM ${os}:${version}${variant}
+ENV DEBIAN_FRONTEND=noninteractive
 ARG mirror
 ARG version
 ARG system_ruby
@@ -143,6 +142,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
 
 FROM ${os}:${version}${variant}
+ENV DEBIAN_FRONTEND=noninteractive
 ARG mirror
 ARG version
 ARG system_ruby
