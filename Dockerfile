@@ -4,8 +4,58 @@ ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
 ARG system_ruby=ruby2.7
 
-FROM ${os}:${version}${variant}
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Build for 0.*, 1.0*, 1.1*, 1.8 and 1.8.5
+FROM debian:buster-slim
+ENV DEBIAN_FRONTEND=noninteractive
+ARG mirror
+
+RUN dpkg --add-architecture i386 \
+  && echo "deb-src ${mirror} buster main" > /etc/apt/sources.list.d/deb-src.list \
+  && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
+  && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
+  && apt-get update \
+  && apt-get install \
+      build-essential \
+      gcc-multilib \
+      bison \
+      rdfind \
+      file \
+      libruby2.5:amd64 \
+      libruby2.5:i386 \
+  && apt-get build-dep ruby2.5 \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /all-ruby
+
+COPY Rakefile /all-ruby/
+COPY lib/ruby_version.rb /all-ruby/lib/
+COPY patch /all-ruby/patch/
+RUN rake setup_build
+
+# rake -j interpret non-numeric argument as number of CPUs plus 3.
+ARG j=numcpu_plus_alpha
+
+COPY versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
+RUN rake -j ${j} all-0
+RUN rake -j ${j} all-1.0
+RUN rake -j ${j} all-1.1a
+RUN rake -j ${j} all-1.1b
+RUN rake -j ${j} all-1.1c
+RUN rake -j ${j} all-1.1d
+RUN rake -j ${j} all-1.8
+RUN rake -j ${j} all-1.8.5
+
+RUN rm -rf Rakefile versions/ patch/
+RUN rm -rf DIST build/*/log build/*/ruby*/
+RUN rm -rf build/*/man build/*/share/man build/*/share/doc build/*/share/ri
+RUN rm -f build/*/lib/libruby-static.a
+RUN rm -f build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
+
+FROM ${os}:${version}${variant}
 ARG mirror
 ARG version
 ARG system_ruby
@@ -26,6 +76,9 @@ RUN dpkg --add-architecture i386 \
   && apt-get build-dep ${system_ruby} \
   && rm -rf /var/lib/apt/lists/*
 
+COPY --from=0 /build-all-ruby/ /build-all-ruby
+COPY --from=0 /all-ruby/ /all-ruby
+
 WORKDIR /all-ruby
 
 COPY Rakefile /all-ruby/
@@ -37,18 +90,10 @@ RUN rake setup_build
 ARG j=numcpu_plus_alpha
 
 COPY versions/0.* versions/1.* versions/2.0.0* versions/2.1* versions/2.2* /all-ruby/versions/
-RUN rake -j ${j} all-0
-RUN rake -j ${j} all-1.0
-RUN rake -j ${j} all-1.1a
-RUN rake -j ${j} all-1.1b
-RUN rake -j ${j} all-1.1c
-RUN rake -j ${j} all-1.1d
 RUN rake -j ${j} all-1.2
 RUN rake -j ${j} all-1.3
 RUN rake -j ${j} all-1.4
 RUN rake -j ${j} all-1.6
-RUN rake -j ${j} all-1.8
-RUN rake -j ${j} all-1.8.5
 RUN rake -j ${j} all-1.8.6
 RUN rake -j ${j} all-1.8.7
 RUN rake -j ${j} all-1.9.0
@@ -128,7 +173,7 @@ RUN dpkg --add-architecture i386 \
       ${system_ruby} \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=0 /build-all-ruby/ /build-all-ruby
-COPY --from=0 /all-ruby/ /all-ruby
+COPY --from=1 /build-all-ruby/ /build-all-ruby
+COPY --from=1 /all-ruby/ /all-ruby
 
 WORKDIR /all-ruby
