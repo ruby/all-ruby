@@ -80,13 +80,8 @@ RUN rake setup_build
 ARG j=numcpu_plus_alpha
 
 COPY versions/1.* versions/2.1* versions/2.2* versions/2.3* versions/2.4* versions/2.5* versions/2.6* versions/2.7* versions/3.0* /all-ruby/versions/
-RUN rake -j ${j} all-1.2 all-1.3 all-1.4 all-1.6
-RUN rake -j ${j} all-1.8.6
-RUN rake -j ${j} all-1.8.7
-RUN rake -j ${j} all-1.9.0
-RUN rake -j ${j} all-1.9.1
-RUN rake -j ${j} all-1.9.2
-RUN rake -j ${j} all-1.9.3
+RUN rake -j ${j} all-1.2 all-1.3 all-1.4 all-1.6 all-1.8.6 all-1.8.7
+RUN rake -j ${j} all-1.9.0 all-1.9.1 all-1.9.2 all-1.9.3
 RUN rake -j ${j} all-2.1
 RUN rake -j ${j} all-2.2
 RUN rake -j ${j} all-2.3
