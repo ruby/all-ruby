@@ -44,6 +44,7 @@ RUN rake -j ${j} all-1.1c
 RUN rake -j ${j} all-1.1d
 RUN rake -j ${j} all-1.8
 RUN rake -j ${j} all-1.8.5
+RUN rake -j ${j} all-2.0.0
 
 RUN rm -rf Rakefile versions/ patch/
 RUN rm -rf DIST build/*/log build/*/ruby*/
@@ -99,7 +100,6 @@ RUN rake -j ${j} all-1.9.0
 RUN rake -j ${j} all-1.9.1
 RUN rake -j ${j} all-1.9.2
 RUN rake -j ${j} all-1.9.3
-RUN rake -j ${j} all-2.0.0
 RUN rake -j ${j} all-2.1
 RUN rake -j ${j} all-2.2
 
