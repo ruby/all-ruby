@@ -561,7 +561,7 @@ task :setup_build do
     puts "'build' symlink already exist."
   else
     build_dirname = "../build-all-ruby"
-    Dir.mkdir build_dirname
+    Dir.mkdir build_dirname unless File.directory? build_dirname
     File.symlink build_dirname, "build"
     puts "symlink created: build -> #{build_dirname}"
   end
