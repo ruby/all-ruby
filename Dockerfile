@@ -185,4 +185,8 @@ RUN dpkg --add-architecture i386 \
 COPY --from=2 /build-all-ruby/ /build-all-ruby
 COPY --from=2 /all-ruby/ /all-ruby
 
+# for Ruby 0.x and 1.1x
+COPY --from=2 /lib/i386-linux-gnu/libcrypt.so.1.1.0 /lib/i386-linux-gnu/libcrypt.so.1.1.0
+RUN cd /lib/i386-linux-gnu && ln -s libcrypt.so.1.1.0 libcrypt.so.1
+
 WORKDIR /all-ruby
