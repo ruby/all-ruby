@@ -4,7 +4,7 @@ ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
 ARG system_ruby=ruby2.7
 
-# Build for 0.*, 1.0*, 1.1*, 1.8 and 1.8.5
+# Build for 0.*, 1.0*, 1.1*, 1.8.0-4, 1.8.5 and 2.0.0
 FROM debian:buster-slim
 ENV DEBIAN_FRONTEND=noninteractive
 ARG mirror
