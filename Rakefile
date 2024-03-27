@@ -502,9 +502,17 @@ class RubySource
       File.chmod(0755, "#{prefix}/bin/#{cc_bin}")
     }
 
-    setup = [{'CFLAGS'=>'-g -O0',
-              'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
-             'setarch', 'i686']
+    if RbConfig::CONFIG['arch'] =~ /linux/
+      setup = [{'CFLAGS'=>'-g -O0',
+                'PATH' => "#{prefix}/bin:#{ENV['PATH']}"},
+               'setarch', 'i686']
+    elsif RbConfig::CONFIG['arch'] =~ /freebsd/
+      setup = [{'CFLAGS'=>'-g -O0',
+                'PATH' => "#{prefix}/bin:#{ENV['PATH']}",
+                'UNAME_m' => 'i386'}]
+    else
+      raise
+    end
 
     if version_between('0.49', '0.60')
       setup[0]['LIBS'] = '-lcrypt'
