@@ -300,6 +300,11 @@ class RubySource
     if version_between('0.69', '0.95')
       patch srcdir, 'glob-alloca2'
     end
+    if RbConfig::CONFIG['arch'] =~ /freebsd/
+      if version_between('0.69', '1.1b9_19')
+        patch srcdir, 'glob-voidalloca'
+      end
+    end
     if version_between('0.49', '0.55')
       patch srcdir, 'ruby-errno3'
     elsif version_between('0.60', '0.76')
