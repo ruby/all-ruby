@@ -1,0 +1,11 @@
+--- error.c-	2024-03-20 19:28:51.656475000 +0900
++++ error.c	2024-03-20 19:29:47.710252000 +0900
+@@ -380,7 +380,7 @@
+     rb_raise(exc_new(syserr_list[n], buf));
+ }
+ 
+-extern int sys_nerr;
++extern int const sys_nerr;
+ 
+ static void
+ init_syserr()
