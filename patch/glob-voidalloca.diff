@@ -1,0 +1,9 @@
+--- glob.c-	2024-03-20 18:41:00.808630000 +0900
++++ glob.c	2024-03-20 18:41:33.134288000 +0900
+@@ -83,5 +83,5 @@
+ #include <alloca.h>
+ #else
+-char *alloca ();
++void *alloca ();
+ #endif
+ #endif
