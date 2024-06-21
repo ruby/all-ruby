@@ -1,0 +1,11 @@
+--- error.c-	2024-03-20 14:02:45.691320000 +0900
++++ error.c	2024-03-20 14:04:05.705772000 +0900
+@@ -432,7 +432,7 @@
+ static VALUE *syserr_list;
+ #endif
+ 
+-#ifndef NT
++#if !defined(NT) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(sys_nerr)
+ extern int sys_nerr;
+ #endif
+ 
