@@ -1,0 +1,22 @@
+name: Update latest versions
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [update]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rake sync
+      - name: commit and push
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "rake sync"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
