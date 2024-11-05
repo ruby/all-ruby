@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: sleep 180 # wait for the release to be available
       - run: rake sync
       - name: commit and push
         run: |
