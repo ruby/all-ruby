@@ -105,7 +105,7 @@ RUN rake -j ${j} all-3.3
 COPY versions/3.4* /all-ruby/versions/
 RUN rake -j ${j} all-3.4
 
-COPY versions/3.4* /all-ruby/versions/
+COPY versions/3.5* /all-ruby/versions/
 RUN rake -j ${j} 3.5.0-preview1
 
 COPY lib/* /all-ruby/lib/
