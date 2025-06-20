@@ -20,4 +20,4 @@ jobs:
           git commit -m "rake sync"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_AUTOMERGE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MATZBOT_AUTO_UPDATE_TOKEN }}
