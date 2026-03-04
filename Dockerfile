@@ -160,6 +160,21 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
+# Aggregator: Combine all build outputs and deduplicate with rdfind
+# (rdfind is already installed in builder-bullseye)
+# =============================================================================
+FROM builder-bullseye AS aggregator
+
+COPY --from=ruby-0.x-2.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-1.2-1.9 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.1-2.4 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.5-2.7 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.0-3.2 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.3-4.0 /build-all-ruby/ /build-all-ruby/
+
+RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
+
+# =============================================================================
 # Final: Runtime image
 # =============================================================================
 FROM ${os}:${version}${variant}
@@ -191,26 +206,18 @@ RUN dpkg --add-architecture i386 \
       libssl1.1:amd64 \
       zlib1g:amd64 \
       gcc \
-      rdfind \
       ${system_ruby} \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ruby-0.x-2.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=aggregator /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-0.x-2.0 /all-ruby/ /all-ruby/
-COPY --from=ruby-1.2-1.9 /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-1.2-1.9 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-2.1-2.4 /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-2.1-2.4 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-2.5-2.7 /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-2.5-2.7 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-3.0-3.2 /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-3.0-3.2 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-3.3-4.0 /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-3.3-4.0 /all-ruby/bin/ /all-ruby/bin/
 
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
-
-RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
 
 WORKDIR /all-ruby
