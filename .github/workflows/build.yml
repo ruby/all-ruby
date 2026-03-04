@@ -58,8 +58,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: ruby-0.x-3.1
-            tag: ruby-0.x-3.1
+          - target: ruby-0.x-2.4
+            tag: ruby-0.x-2.4
+          - target: ruby-2.5-3.1
+            tag: ruby-2.5-3.1
           - target: ruby-3.2-4.0
             tag: ruby-3.2-4.0
     steps:
