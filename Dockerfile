@@ -41,7 +41,7 @@ COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 # =============================================================================
-# Ruby 0.x, 1.0, 1.1, 1.8.0-1.8.5, 2.0.0 on Debian Buster
+# Ruby 0.x-2.0.0 on Debian Buster
 # =============================================================================
 FROM builder-buster AS ruby-0.x-2.0
 ARG j=numcpu_plus_alpha
@@ -88,13 +88,26 @@ COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 # =============================================================================
-# Ruby 1.2-1.8.7, 1.9.x
+# Ruby 1.2-1.8.7
 # =============================================================================
-FROM builder-bullseye AS ruby-1.2-1.9
+FROM builder-bullseye AS ruby-1.2-1.8.7
 ARG j=numcpu_plus_alpha
 
-COPY versions/1.2* versions/1.3* versions/1.4* versions/1.6* versions/1.8.6* versions/1.8.7* versions/1.9* /all-ruby/versions/
+COPY versions/1.2* versions/1.3* versions/1.4* versions/1.6* versions/1.8.6* versions/1.8.7* /all-ruby/versions/
 RUN rake -j ${j} all-1.2 all-1.3 all-1.4 all-1.6 all-1.8.6 all-1.8.7
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 1.9.x
+# =============================================================================
+FROM builder-bullseye AS ruby-1.9
+ARG j=numcpu_plus_alpha
+
+COPY versions/1.9* /all-ruby/versions/
 RUN rake -j ${j} all-1.9.0 all-1.9.1 all-1.9.2
 RUN rake -j ${j} all-1.9.3
 
@@ -104,13 +117,13 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Ruby 2.1-2.4
+# Ruby 2.1
 # =============================================================================
-FROM builder-bullseye AS ruby-2.1-2.4
+FROM builder-bullseye AS ruby-2.1
 ARG j=numcpu_plus_alpha
 
-COPY versions/2.1* versions/2.2* versions/2.3* versions/2.4* /all-ruby/versions/
-RUN rake -j ${j} all-2.1 all-2.2 all-2.3 all-2.4
+COPY versions/2.1* /all-ruby/versions/
+RUN rake -j ${j} all-2.1
 
 RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
       build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
@@ -118,13 +131,13 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Ruby 2.5-2.7
+# Ruby 2.2
 # =============================================================================
-FROM builder-bullseye AS ruby-2.5-2.7
+FROM builder-bullseye AS ruby-2.2
 ARG j=numcpu_plus_alpha
 
-COPY versions/2.5* versions/2.6* versions/2.7* /all-ruby/versions/
-RUN rake -j ${j} all-2.5 all-2.6 all-2.7
+COPY versions/2.2* /all-ruby/versions/
+RUN rake -j ${j} all-2.2
 
 RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
       build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
@@ -132,13 +145,13 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Ruby 3.0-3.2
+# Ruby 2.3
 # =============================================================================
-FROM builder-bullseye AS ruby-3.0-3.2
+FROM builder-bullseye AS ruby-2.3
 ARG j=numcpu_plus_alpha
 
-COPY versions/3.0* versions/3.1* versions/3.2* /all-ruby/versions/
-RUN rake -j ${j} all-3.0 all-3.1 all-3.2
+COPY versions/2.3* /all-ruby/versions/
+RUN rake -j ${j} all-2.3
 
 RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
       build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
@@ -146,13 +159,139 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Ruby 3.3-4.0
+# Ruby 2.4
 # =============================================================================
-FROM builder-bullseye AS ruby-3.3-4.0
+FROM builder-bullseye AS ruby-2.4
 ARG j=numcpu_plus_alpha
 
-COPY versions/3.3* versions/3.4* versions/3.5* versions/4.0* /all-ruby/versions/
-RUN rake -j ${j} all-3.3 all-3.4 3.5.0-preview1 all-4.0
+COPY versions/2.4* /all-ruby/versions/
+RUN rake -j ${j} all-2.4
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 2.5
+# =============================================================================
+FROM builder-bullseye AS ruby-2.5
+ARG j=numcpu_plus_alpha
+
+COPY versions/2.5* /all-ruby/versions/
+RUN rake -j ${j} all-2.5
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 2.6
+# =============================================================================
+FROM builder-bullseye AS ruby-2.6
+ARG j=numcpu_plus_alpha
+
+COPY versions/2.6* /all-ruby/versions/
+RUN rake -j ${j} all-2.6
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 2.7
+# =============================================================================
+FROM builder-bullseye AS ruby-2.7
+ARG j=numcpu_plus_alpha
+
+COPY versions/2.7* /all-ruby/versions/
+RUN rake -j ${j} all-2.7
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 3.0
+# =============================================================================
+FROM builder-bullseye AS ruby-3.0
+ARG j=numcpu_plus_alpha
+
+COPY versions/3.0* /all-ruby/versions/
+RUN rake -j ${j} all-3.0
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 3.1
+# =============================================================================
+FROM builder-bullseye AS ruby-3.1
+ARG j=numcpu_plus_alpha
+
+COPY versions/3.1* /all-ruby/versions/
+RUN rake -j ${j} all-3.1
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 3.2
+# =============================================================================
+FROM builder-bullseye AS ruby-3.2
+ARG j=numcpu_plus_alpha
+
+COPY versions/3.2* /all-ruby/versions/
+RUN rake -j ${j} all-3.2
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 3.3
+# =============================================================================
+FROM builder-bullseye AS ruby-3.3
+ARG j=numcpu_plus_alpha
+
+COPY versions/3.3* /all-ruby/versions/
+RUN rake -j ${j} all-3.3
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 3.4
+# =============================================================================
+FROM builder-bullseye AS ruby-3.4
+ARG j=numcpu_plus_alpha
+
+COPY versions/3.4* /all-ruby/versions/
+RUN rake -j ${j} all-3.4
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 3.5-4.0
+# =============================================================================
+FROM builder-bullseye AS ruby-3.5-4.0
+ARG j=numcpu_plus_alpha
+
+COPY versions/3.5* versions/4.0* /all-ruby/versions/
+RUN rake -j ${j} 3.5.0-preview1 all-4.0
 
 RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
       build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
@@ -166,11 +305,21 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 FROM builder-bullseye AS aggregator
 
 COPY --from=ruby-0.x-2.0 /build-all-ruby/ /build-all-ruby/
-COPY --from=ruby-1.2-1.9 /build-all-ruby/ /build-all-ruby/
-COPY --from=ruby-2.1-2.4 /build-all-ruby/ /build-all-ruby/
-COPY --from=ruby-2.5-2.7 /build-all-ruby/ /build-all-ruby/
-COPY --from=ruby-3.0-3.2 /build-all-ruby/ /build-all-ruby/
-COPY --from=ruby-3.3-4.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-1.2-1.8.7 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-1.9 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.1 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.2 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.3 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.4 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.5 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.6 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.7 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.1 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.2 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.3 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.4 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.5-4.0 /build-all-ruby/ /build-all-ruby/
 
 RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
 
@@ -211,11 +360,21 @@ RUN dpkg --add-architecture i386 \
 
 COPY --from=aggregator /build-all-ruby/ /build-all-ruby/
 COPY --from=ruby-0.x-2.0 /all-ruby/ /all-ruby/
-COPY --from=ruby-1.2-1.9 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-2.1-2.4 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-2.5-2.7 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-3.0-3.2 /all-ruby/bin/ /all-ruby/bin/
-COPY --from=ruby-3.3-4.0 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-1.2-1.8.7 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-1.9 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.1 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.2 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.3 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.4 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.5 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.6 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.7 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.0 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.1 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.2 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.3 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.4 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.5-4.0 /all-ruby/bin/ /all-ruby/bin/
 
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/

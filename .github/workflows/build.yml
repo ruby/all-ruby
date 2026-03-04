@@ -18,11 +18,21 @@ jobs:
       matrix:
         target:
           - ruby-0.x-2.0
-          - ruby-1.2-1.9
-          - ruby-2.1-2.4
-          - ruby-2.5-2.7
-          - ruby-3.0-3.2
-          - ruby-3.3-4.0
+          - ruby-1.2-1.8.7
+          - ruby-1.9
+          - ruby-2.1
+          - ruby-2.2
+          - ruby-2.3
+          - ruby-2.4
+          - ruby-2.5
+          - ruby-2.6
+          - ruby-2.7
+          - ruby-3.0
+          - ruby-3.1
+          - ruby-3.2
+          - ruby-3.3
+          - ruby-3.4
+          - ruby-3.5-4.0
     steps:
       - uses: actions/checkout@v4
 
@@ -64,8 +74,18 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: |
             type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-0.x-2.0
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-1.2-1.9
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.1-2.4
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.5-2.7
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.0-3.2
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.3-4.0
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-1.2-1.8.7
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-1.9
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.1
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.2
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.3
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.4
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.5
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.6
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.7
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.0
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.1
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.2
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.3
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.4
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.5-4.0
