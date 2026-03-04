@@ -19,12 +19,12 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - group-legacy
-          - group-a
-          - group-b
-          - group-c
-          - group-d
-          - group-e
+          - ruby-0.x-2.0
+          - ruby-1.2-1.9
+          - ruby-2.1-2.4
+          - ruby-2.5-2.7
+          - ruby-3.0-3.2
+          - ruby-3.3-4.0
     steps:
       - uses: actions/checkout@v4
 
@@ -65,9 +65,9 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-group-legacy
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-group-a
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-group-b
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-group-c
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-group-d
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-group-e
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-0.x-2.0
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-1.2-1.9
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.1-2.4
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.5-2.7
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.0-3.2
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.3-4.0

@@ -41,9 +41,9 @@ COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 # =============================================================================
-# Group: legacy (0.x, 1.0, 1.1, 1.8.0-1.8.5, 2.0.0) on Debian Buster
+# Ruby 0.x, 1.0, 1.1, 1.8.0-1.8.5, 2.0.0 on Debian Buster
 # =============================================================================
-FROM builder-buster AS group-legacy
+FROM builder-buster AS ruby-0.x-2.0
 ARG j=numcpu_plus_alpha
 
 COPY versions/0.* versions/1.0* versions/1.1* versions/1.8.0* versions/1.8.1* versions/1.8.2* versions/1.8.3* versions/1.8.4* versions/1.8.5* versions/2.0.0* /all-ruby/versions/
@@ -88,9 +88,9 @@ COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 # =============================================================================
-# Group A: 1.2-1.8.7, 1.9.x
+# Ruby 1.2-1.8.7, 1.9.x
 # =============================================================================
-FROM builder-bullseye AS group-a
+FROM builder-bullseye AS ruby-1.2-1.9
 ARG j=numcpu_plus_alpha
 
 COPY versions/1.2* versions/1.3* versions/1.4* versions/1.6* versions/1.8.6* versions/1.8.7* versions/1.9* /all-ruby/versions/
@@ -104,9 +104,9 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Group B: 2.1-2.4
+# Ruby 2.1-2.4
 # =============================================================================
-FROM builder-bullseye AS group-b
+FROM builder-bullseye AS ruby-2.1-2.4
 ARG j=numcpu_plus_alpha
 
 COPY versions/2.1* versions/2.2* versions/2.3* versions/2.4* /all-ruby/versions/
@@ -118,9 +118,9 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Group C: 2.5-2.7
+# Ruby 2.5-2.7
 # =============================================================================
-FROM builder-bullseye AS group-c
+FROM builder-bullseye AS ruby-2.5-2.7
 ARG j=numcpu_plus_alpha
 
 COPY versions/2.5* versions/2.6* versions/2.7* /all-ruby/versions/
@@ -132,9 +132,9 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Group D: 3.0-3.2
+# Ruby 3.0-3.2
 # =============================================================================
-FROM builder-bullseye AS group-d
+FROM builder-bullseye AS ruby-3.0-3.2
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.0* versions/3.1* versions/3.2* /all-ruby/versions/
@@ -146,9 +146,9 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Group E: 3.3-4.0
+# Ruby 3.3-4.0
 # =============================================================================
-FROM builder-bullseye AS group-e
+FROM builder-bullseye AS ruby-3.3-4.0
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.3* versions/3.4* versions/3.5* versions/4.0* /all-ruby/versions/
@@ -195,18 +195,18 @@ RUN dpkg --add-architecture i386 \
       ${system_ruby} \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=group-legacy /build-all-ruby/ /build-all-ruby/
-COPY --from=group-legacy /all-ruby/ /all-ruby/
-COPY --from=group-a /build-all-ruby/ /build-all-ruby/
-COPY --from=group-a /all-ruby/bin/ /all-ruby/bin/
-COPY --from=group-b /build-all-ruby/ /build-all-ruby/
-COPY --from=group-b /all-ruby/bin/ /all-ruby/bin/
-COPY --from=group-c /build-all-ruby/ /build-all-ruby/
-COPY --from=group-c /all-ruby/bin/ /all-ruby/bin/
-COPY --from=group-d /build-all-ruby/ /build-all-ruby/
-COPY --from=group-d /all-ruby/bin/ /all-ruby/bin/
-COPY --from=group-e /build-all-ruby/ /build-all-ruby/
-COPY --from=group-e /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-0.x-2.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-0.x-2.0 /all-ruby/ /all-ruby/
+COPY --from=ruby-1.2-1.9 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-1.2-1.9 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.1-2.4 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.1-2.4 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-2.5-2.7 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-2.5-2.7 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.0-3.2 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.0-3.2 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=ruby-3.3-4.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=ruby-3.3-4.0 /all-ruby/bin/ /all-ruby/bin/
 
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
