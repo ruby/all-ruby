@@ -3,10 +3,6 @@ name: Build Docker image
 on:
   workflow_dispatch:
 
-env:
-  REGISTRY: docker.io
-  IMAGE_NAME: rubylang/all-ruby
-
 permissions:
   contents: read
 
@@ -49,9 +45,9 @@ jobs:
           context: .
           target: ${{ matrix.target }}
           cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-${{ matrix.target }}
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-${{ matrix.target }}
           cache-to: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-${{ matrix.target }},mode=max
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-${{ matrix.target }},mode=max
 
   build-final:
     needs: build-group
@@ -71,21 +67,21 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: docker.io/rubylang/all-ruby:latest
           cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-0.x-2.0
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-1.2-1.8.7
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-1.9
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.1
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.2
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.3
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.4
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.5
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.6
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-2.7
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.0
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.1
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.2
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.3
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.4
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-ruby-3.5-4.0
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-0.x-2.0
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-1.2-1.8.7
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-1.9
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.1
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.2
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.3
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.4
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.5
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.6
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-2.7
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-3.0
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-3.1
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-3.2
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-3.3
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-3.4
+            type=registry,ref=docker.io/rubylang/all-ruby:cache-ruby-3.5-4.0
