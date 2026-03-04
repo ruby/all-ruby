@@ -1,0 +1,90 @@
+ARG os=debian
+ARG version=bullseye
+ARG variant=-slim
+ARG mirror=http://deb.debian.org/debian
+ARG system_ruby=ruby2.7
+
+# =============================================================================
+# Aggregator: Combine all build outputs and deduplicate with rdfind
+# =============================================================================
+FROM ${os}:${version}${variant} AS aggregator
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y rdfind && rm -rf /var/lib/apt/lists/*
+
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-2.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-1.2-1.8.7 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-1.9 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.1 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.2 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.3 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.4 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.5 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.6 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.7 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.1 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.2 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.3 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.4 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.5-4.0 /build-all-ruby/ /build-all-ruby/
+
+RUN rdfind -makehardlinks true -makeresultsfile false /build-all-ruby
+
+# =============================================================================
+# Final: Runtime image
+# =============================================================================
+FROM ${os}:${version}${variant}
+ENV DEBIAN_FRONTEND=noninteractive
+ARG mirror
+ARG version
+ARG system_ruby
+
+# gcc is required for mjit of ruby 2.6
+
+RUN dpkg --add-architecture i386 \
+  && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
+  && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
+  && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
+  && apt-get update \
+  && apt-get install \
+      libc6:i386 \
+      libffi7:i386 \
+      libgcc1:i386 \
+      libgdbm6:i386 \
+      libncurses5:i386 \
+      libreadline8:i386 \
+      libssl1.1:i386 \
+      zlib1g:i386 \
+      libffi7:amd64 \
+      libgdbm6:amd64 \
+      libncurses5:amd64 \
+      libreadline8:amd64 \
+      libssl1.1:amd64 \
+      zlib1g:amd64 \
+      gcc \
+      ${system_ruby} \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY --from=aggregator /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-2.0 /all-ruby/ /all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-1.2-1.8.7 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-1.9 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.1 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.2 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.3 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.4 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.5 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.6 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.7 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.1 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.2 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.3 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.4 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.5-4.0 /all-ruby/bin/ /all-ruby/bin/
+
+COPY lib/* /all-ruby/lib/
+COPY all-ruby /all-ruby/
+
+WORKDIR /all-ruby

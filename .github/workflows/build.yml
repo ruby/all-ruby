@@ -70,7 +70,6 @@ jobs:
             /usr/local/lib/node_modules \
             /usr/local/share/chromium \
             /usr/local/share/powershell \
-            /usr/local/share/powershell \
             /usr/share/dotnet \
             /usr/share/swift
 
@@ -87,26 +86,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: Dockerfile.final
           push: true
           tags: docker.io/rubylang/all-ruby:latest
-          build-contexts: |
-            ruby-0.x-2.0=docker-image://docker.io/rubylang/all-ruby:ruby-0.x-2.0
-            ruby-1.2-1.8.7=docker-image://docker.io/rubylang/all-ruby:ruby-1.2-1.8.7
-            ruby-1.9=docker-image://docker.io/rubylang/all-ruby:ruby-1.9
-            ruby-2.1=docker-image://docker.io/rubylang/all-ruby:ruby-2.1
-            ruby-2.2=docker-image://docker.io/rubylang/all-ruby:ruby-2.2
-            ruby-2.3=docker-image://docker.io/rubylang/all-ruby:ruby-2.3
-            ruby-2.4=docker-image://docker.io/rubylang/all-ruby:ruby-2.4
-            ruby-2.5=docker-image://docker.io/rubylang/all-ruby:ruby-2.5
-            ruby-2.6=docker-image://docker.io/rubylang/all-ruby:ruby-2.6
-            ruby-2.7=docker-image://docker.io/rubylang/all-ruby:ruby-2.7
-            ruby-3.0=docker-image://docker.io/rubylang/all-ruby:ruby-3.0
-            ruby-3.1=docker-image://docker.io/rubylang/all-ruby:ruby-3.1
-            ruby-3.2=docker-image://docker.io/rubylang/all-ruby:ruby-3.2
-            ruby-3.3=docker-image://docker.io/rubylang/all-ruby:ruby-3.3
-            ruby-3.4=docker-image://docker.io/rubylang/all-ruby:ruby-3.4
-            ruby-3.5-4.0=docker-image://docker.io/rubylang/all-ruby:ruby-3.5-4.0
-          cache-from: |
-            type=registry,ref=docker.io/rubylang/all-ruby:cache-final
-          cache-to: |
-            type=registry,ref=docker.io/rubylang/all-ruby:cache-final,mode=max
