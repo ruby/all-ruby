@@ -21,7 +21,7 @@ RUN dpkg --add-architecture i386 \
   && echo "deb-src http://archive.debian.org/debian/ buster main" > /etc/apt/sources.list.d/deb-src.list \
   && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
   && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
-  && apt-get update \
+  && apt-get update -o Acquire::Check-Valid-Until=false \
   && apt-get install \
       build-essential \
       gcc-multilib \
