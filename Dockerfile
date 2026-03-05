@@ -1,8 +1,8 @@
 ARG os=debian
-ARG version=bullseye
+ARG version=bookworm
 ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
-ARG system_ruby=ruby2.7
+ARG system_ruby=ruby3.1
 
 # rake -j interpret non-numeric argument as number of CPUs plus 3.
 ARG j=numcpu_plus_alpha
@@ -56,16 +56,14 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
-# Base build environment: Debian Bullseye (for modern Ruby versions)
+# Base build environment: Debian Bullseye (for Ruby 1.2-3.0)
 # =============================================================================
-FROM ${os}:${version}${variant} AS builder-bullseye
+FROM debian:bullseye-slim AS builder-bullseye
 ENV DEBIAN_FRONTEND=noninteractive
 ARG mirror
-ARG version
-ARG system_ruby
 
 RUN dpkg --add-architecture i386 \
-  && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
+  && echo "deb-src ${mirror} bullseye main" > /etc/apt/sources.list.d/deb-src.list \
   && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
   && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
   && apt-get update \
@@ -75,9 +73,9 @@ RUN dpkg --add-architecture i386 \
       bison \
       rdfind \
       file \
-      lib${system_ruby}:amd64 \
-      lib${system_ruby}:i386 \
-  && apt-get build-dep ${system_ruby} \
+      libruby2.7:amd64 \
+      libruby2.7:i386 \
+  && apt-get build-dep ruby2.7 \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /all-ruby
@@ -229,9 +227,41 @@ RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
 RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
 
 # =============================================================================
+# Base build environment: Debian Bookworm (for Ruby 3.1+)
+# =============================================================================
+FROM ${os}:${version}${variant} AS builder-bookworm
+ENV DEBIAN_FRONTEND=noninteractive
+ARG mirror
+ARG version
+ARG system_ruby
+
+RUN dpkg --add-architecture i386 \
+  && echo "deb-src ${mirror} ${version} main" > /etc/apt/sources.list.d/deb-src.list \
+  && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
+  && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
+  && apt-get update \
+  && apt-get install \
+      build-essential \
+      gcc-multilib \
+      bison \
+      rdfind \
+      file \
+      lib${system_ruby}:amd64 \
+      lib${system_ruby}:i386 \
+  && apt-get build-dep ${system_ruby} \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /all-ruby
+
+COPY Rakefile /all-ruby/
+COPY lib/ruby_version.rb /all-ruby/lib/
+COPY patch /all-ruby/patch/
+RUN rake setup_build
+
+# =============================================================================
 # Ruby 3.1
 # =============================================================================
-FROM builder-bullseye AS ruby-3.1
+FROM builder-bookworm AS ruby-3.1
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.1* /all-ruby/versions/
@@ -245,7 +275,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 # =============================================================================
 # Ruby 3.2
 # =============================================================================
-FROM builder-bullseye AS ruby-3.2
+FROM builder-bookworm AS ruby-3.2
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.2* /all-ruby/versions/
@@ -259,7 +289,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 # =============================================================================
 # Ruby 3.3
 # =============================================================================
-FROM builder-bullseye AS ruby-3.3
+FROM builder-bookworm AS ruby-3.3
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.3* /all-ruby/versions/
@@ -273,7 +303,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 # =============================================================================
 # Ruby 3.4
 # =============================================================================
-FROM builder-bullseye AS ruby-3.4
+FROM builder-bookworm AS ruby-3.4
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.4* /all-ruby/versions/
@@ -287,7 +317,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 # =============================================================================
 # Ruby 3.5-4.0
 # =============================================================================
-FROM builder-bullseye AS ruby-3.5-4.0
+FROM builder-bookworm AS ruby-3.5-4.0
 ARG j=numcpu_plus_alpha
 
 COPY versions/3.5* versions/4.0* /all-ruby/versions/
