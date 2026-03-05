@@ -132,10 +132,18 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_ACCESS_TOKEN }}
+
       - name: Build and push latest image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile.final
           push: true
-          tags: docker.io/rubylang/all-ruby:latest
+          tags: |
+            docker.io/rubylang/all-ruby:latest
+            ghcr.io/ruby/all-ruby:latest
