@@ -113,7 +113,7 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 # =============================================================================
 # Ruby 2.0
 # =============================================================================
-FROM builder-bullseye AS ruby-2.0
+FROM builder-buster AS ruby-2.0
 ARG j=numcpu_plus_alpha
 
 COPY versions/2.0.0* /all-ruby/versions/
