@@ -62,19 +62,16 @@ FROM debian:bullseye-slim AS builder-bullseye
 ENV DEBIAN_FRONTEND=noninteractive
 ARG mirror
 
-RUN dpkg --add-architecture i386 \
-  && echo "deb-src ${mirror} bullseye main" > /etc/apt/sources.list.d/deb-src.list \
+RUN echo "deb-src ${mirror} bullseye main" > /etc/apt/sources.list.d/deb-src.list \
   && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
   && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
   && apt-get update \
   && apt-get install \
       build-essential \
-      gcc-multilib \
       bison \
       rdfind \
       file \
       libruby2.7:amd64 \
-      libruby2.7:i386 \
   && apt-get build-dep ruby2.7 \
   && rm -rf /var/lib/apt/lists/*
 
@@ -86,13 +83,27 @@ COPY patch /all-ruby/patch/
 RUN rake setup_build
 
 # =============================================================================
-# Ruby 1.2-1.8.7
+# Ruby 1.2-1.6 on Debian Buster (needs i386 for 32-bit builds)
 # =============================================================================
-FROM builder-bullseye AS ruby-1.2-1.8.7
+FROM builder-buster AS ruby-1.2-1.6
 ARG j=numcpu_plus_alpha
 
-COPY versions/1.2* versions/1.3* versions/1.4* versions/1.6* versions/1.8.6* versions/1.8.7* /all-ruby/versions/
-RUN rake -j ${j} all-1.2 all-1.3 all-1.4 all-1.6 all-1.8.6 all-1.8.7
+COPY versions/1.2* versions/1.3* versions/1.4* versions/1.6* /all-ruby/versions/
+RUN rake -j ${j} all-1.2 all-1.3 all-1.4 all-1.6
+
+RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
+      build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
+    rm -f build/*/lib/libruby-static.a build/*/bin/gcc build/*/bin/cc
+RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'file $1 | grep -q "not stripped"' - '{}' \; -print0 | xargs -0 strip
+
+# =============================================================================
+# Ruby 1.8.6-1.8.7
+# =============================================================================
+FROM builder-bullseye AS ruby-1.8.6-1.8.7
+ARG j=numcpu_plus_alpha
+
+COPY versions/1.8.6* versions/1.8.7* /all-ruby/versions/
+RUN rake -j ${j} all-1.8.6 all-1.8.7
 
 RUN rm -rf Rakefile versions/ patch/ DIST build/*/log build/*/ruby*/ \
       build/*/man build/*/share/man build/*/share/doc build/*/share/ri && \
