@@ -1,8 +1,8 @@
 ARG os=debian
-ARG version=bullseye
+ARG version=bookworm
 ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
-ARG system_ruby=ruby2.7
+ARG system_ruby=ruby3.1
 
 # =============================================================================
 # Merge: ruby-0.x-2.0 through ruby-2.4
@@ -89,18 +89,18 @@ RUN dpkg --add-architecture i386 \
   && apt-get update \
   && apt-get install \
       libc6:i386 \
-      libffi7:i386 \
+      libffi8:i386 \
       libgcc1:i386 \
       libgdbm6:i386 \
       libncurses5:i386 \
       libreadline8:i386 \
-      libssl1.1:i386 \
+      libssl3:i386 \
       zlib1g:i386 \
-      libffi7:amd64 \
+      libffi8:amd64 \
       libgdbm6:amd64 \
       libncurses5:amd64 \
       libreadline8:amd64 \
-      libssl1.1:amd64 \
+      libssl3:amd64 \
       zlib1g:amd64 \
       gcc \
       ${system_ruby} \
@@ -110,6 +110,16 @@ COPY --from=dedup /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-2.4 /all-ruby/ /all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.5-3.1 /all-ruby/bin/ /all-ruby/bin/
 COPY --from=docker.io/rubylang/all-ruby:ruby-3.2-4.0 /all-ruby/bin/ /all-ruby/bin/
+
+# for Ruby 0.x and 1.1x (built on buster, need libcrypt.so.1)
+COPY --from=docker.io/rubylang/all-ruby:ruby-1.2-1.8.7 /lib/i386-linux-gnu/libcrypt.so.1.1.0 /lib/i386-linux-gnu/libcrypt.so.1.1.0
+RUN cd /lib/i386-linux-gnu && ln -s libcrypt.so.1.1.0 libcrypt.so.1
+
+# for Ruby 2.4-3.0 (built on bullseye, need libssl1.1/libcrypto1.1)
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/libssl.so.1.1
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/i386-linux-gnu/libssl.so.1.1 /usr/lib/i386-linux-gnu/libssl.so.1.1
+COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/i386-linux-gnu/libcrypto.so.1.1 /usr/lib/i386-linux-gnu/libcrypto.so.1.1
 
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
