@@ -116,8 +116,8 @@ COPY --from=docker.io/rubylang/all-ruby:ruby-3.2-4.0 /all-ruby/bin/ /all-ruby/bi
 # for Ruby 2.4-3.0 (built on bullseye, need libssl1.1/libcrypto1.1)
 COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/libssl.so.1.1
 COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1
-COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/i386-linux-gnu/libssl.so.1.1 /usr/lib/i386-linux-gnu/libssl.so.1.1
-COPY --from=docker.io/rubylang/all-ruby:ruby-3.0 /usr/lib/i386-linux-gnu/libcrypto.so.1.1 /usr/lib/i386-linux-gnu/libcrypto.so.1.1
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-1.6 /usr/lib/i386-linux-gnu/libssl.so.1.1 /usr/lib/i386-linux-gnu/libssl.so.1.1
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-1.6 /usr/lib/i386-linux-gnu/libcrypto.so.1.1 /usr/lib/i386-linux-gnu/libcrypto.so.1.1
 
 COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
