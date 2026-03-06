@@ -9,19 +9,19 @@ ARG system_ruby=ruby3.1
 # =============================================================================
 FROM ${os}:${version}${variant} AS ruby-0.x-2.4
 
-COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-2.0 /build-all-ruby/ /build-all-ruby/
-COPY --from=docker.io/rubylang/all-ruby:ruby-1.2-1.6 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-1.6 /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-1.8.6-1.8.7 /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-1.9 /build-all-ruby/ /build-all-ruby/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.0 /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.1 /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.2 /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.3 /build-all-ruby/ /build-all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.4 /build-all-ruby/ /build-all-ruby/
 
-COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-2.0 /all-ruby/ /all-ruby/
-COPY --from=docker.io/rubylang/all-ruby:ruby-1.2-1.6 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-1.6 /all-ruby/ /all-ruby/
 COPY --from=docker.io/rubylang/all-ruby:ruby-1.8.6-1.8.7 /all-ruby/bin/ /all-ruby/bin/
 COPY --from=docker.io/rubylang/all-ruby:ruby-1.9 /all-ruby/bin/ /all-ruby/bin/
+COPY --from=docker.io/rubylang/all-ruby:ruby-2.0 /all-ruby/bin/ /all-ruby/bin/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.1 /all-ruby/bin/ /all-ruby/bin/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.2 /all-ruby/bin/ /all-ruby/bin/
 COPY --from=docker.io/rubylang/all-ruby:ruby-2.3 /all-ruby/bin/ /all-ruby/bin/
@@ -114,7 +114,7 @@ COPY --from=docker.io/rubylang/all-ruby:ruby-2.5-3.1 /all-ruby/bin/ /all-ruby/bi
 COPY --from=docker.io/rubylang/all-ruby:ruby-3.2-4.0 /all-ruby/bin/ /all-ruby/bin/
 
 # for Ruby 0.x and 1.1x (built on buster, need libcrypt.so.1)
-COPY --from=docker.io/rubylang/all-ruby:ruby-1.2-1.6 /lib/i386-linux-gnu/libcrypt.so.1.1.0 /lib/i386-linux-gnu/libcrypt.so.1.1.0
+COPY --from=docker.io/rubylang/all-ruby:ruby-0.x-1.6 /lib/i386-linux-gnu/libcrypt.so.1.1.0 /lib/i386-linux-gnu/libcrypt.so.1.1.0
 RUN cd /lib/i386-linux-gnu && ln -s libcrypt.so.1.1.0 libcrypt.so.1
 
 # for Ruby 2.4-3.0 (built on bullseye, need libssl1.1/libcrypto1.1)
