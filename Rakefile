@@ -42,6 +42,7 @@ require 'fileutils'
 require 'json'
 require 'pp'
 require 'rbconfig'
+require 'rexml/document'
 
 require_relative 'lib/ruby_version'
 
@@ -53,6 +54,8 @@ def show_help_message
 end
 
 URI_BASE = 'https://cache.ruby-lang.org/pub/ruby/'
+S3_BUCKET_BASE = 'https://s3.amazonaws.com/ftp.r-l.o/'
+S3_PREFIX = 'pub/ruby/'
 
 # 'rake sync' checks the tarballs in the directories after RUBY_EOL_VERSION.
 # https://www.ruby-lang.org/en/downloads/branches/
@@ -108,23 +111,20 @@ class RubySource
     result = RubySource::TABLE.map {|h|
       h[:dir]
     }.uniq
-    case URI_BASE
-    when /\A(http:|https:)/
-      index = URI(URI_BASE).read
-      lst = []
-      index.scan(%r{href="(?:/pub/ruby/)?(\d\.\d)/"}) {
+    uri = "#{S3_BUCKET_BASE}?list-type=2&prefix=#{S3_PREFIX}&delimiter=/"
+    xml = URI(uri).read
+    doc = REXML::Document.new(xml)
+    lst = []
+    doc.elements.each('ListBucketResult/CommonPrefixes/Prefix') {|e|
+      prefix = e.text # e.g. "pub/ruby/3.4/"
+      if %r{\Apub/ruby/(\d\.\d)/\z} =~ prefix
         lst << $1
-      }
-    else
-      raise "unexpected URI_BASE scheme: #{URI_BASE} (http/https required)"
-    end
+      end
+    }
     lst.each {|n|
       next if result.include? n
-      #puts "New directory found: #{n}"
       result << n
     }
-    #result.map! {|n| uri = URI_BASE + n + "/" }
-    #puts result
     result
   end
 
@@ -132,9 +132,6 @@ class RubySource
     reldirs.reject {|n| (vercmp_key(n) <=> vercmp_key(RUBY_EOL_VERSION)) <= 0 }
   end
 
-  def self.uris_after_eol
-    reldirs_after_eol.map {|n| URI_BASE + n + "/" }
-  end
 
   def self.version_lookup(version)
     TABLE.each {|h|
@@ -623,12 +620,15 @@ RubySource::TABLE.each {|h|
   end
 }
 
-def extract_entries(index_html)
+def extract_entries_from_s3(reldir)
   hs = []
-  index_html.scan(/<a href="(.*?)">/) {
-    uri = (index_html.base_uri + $1).to_s
-    next unless uri.start_with? URI_BASE
-    relpath = uri[URI_BASE.length..-1]
+  prefix = "#{S3_PREFIX}#{reldir}/"
+  uri = "#{S3_BUCKET_BASE}?list-type=2&prefix=#{prefix}"
+  xml = URI(uri).read
+  doc = REXML::Document.new(xml)
+  doc.elements.each('ListBucketResult/Contents/Key') {|e|
+    key = e.text # e.g. "pub/ruby/3.4/ruby-3.4.9.tar.xz"
+    relpath = key.sub(/\Apub\/ruby\//, '')
     next if relpath.empty?
     h = make_entry(relpath)
     next if h[:suffix].empty?
@@ -669,11 +669,10 @@ def update_versions(relpath_list)
 end
 
 task 'sync' do
-  uris = RubySource.uris_after_eol
-  uris.reverse_each {|uri|
-    puts uri
-    index_html = URI(uri).read
-    hs = extract_entries(index_html)
+  reldirs = RubySource.reldirs_after_eol
+  reldirs.reverse_each {|reldir|
+    puts "#{S3_BUCKET_BASE}?list-type=2&prefix=#{S3_PREFIX}#{reldir}/"
+    hs = extract_entries_from_s3(reldir)
     hs = filter_suffix(hs)
     relpath_list = hs.map {|h| h[:relpath] }
     update_versions relpath_list
