@@ -12,11 +12,22 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - run: rake sync
       - name: commit and push
+        id: commit
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "rake sync"
-          git push
+          if git diff --cached --quiet; then
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "rake sync"
+            git push
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.MATZBOT_AUTO_UPDATE_TOKEN }}
+      - name: dispatch build
+        if: steps.commit.outputs.updated == 'true'
+        run: gh workflow run build.yml
+        env:
+          GH_TOKEN: ${{ secrets.MATZBOT_AUTO_UPDATE_TOKEN }}
