@@ -28,6 +28,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MATZBOT_AUTO_UPDATE_TOKEN }}
       - name: dispatch build
         if: steps.commit.outputs.updated == 'true'
-        run: gh workflow run build.yml
+        run: gh api repos/${{ github.repository }}/dispatches -f event_type=build
         env:
           GH_TOKEN: ${{ secrets.MATZBOT_AUTO_UPDATE_TOKEN }}
