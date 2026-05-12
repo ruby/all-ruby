@@ -243,7 +243,10 @@ class RubySource
     system(*command, opt)
     status = $?
     open(status_fn, "w") {|f| f.puts status.to_s.sub(/\Apid \d+ /, '') }
-    print "fail #{tag} #{version}\n" if !status.success?
+    if !status.success?
+      print "fail #{tag} #{version}\n"
+      $stdout.write(File.read(log_fn)) if File.exist?(log_fn)
+    end
     status.success?
   end
 
