@@ -551,7 +551,7 @@ class RubySource
     prefix = File.realpath(build_reldir)
     print "build #{version}\n"
 
-    command = ["./configure", "--prefix=#{prefix}", :chdir => "#{build_reldir}/#{srcdir}"]
+    command = ["./configure", "--prefix=#{prefix}", "--disable-install-doc", :chdir => "#{build_reldir}/#{srcdir}"]
     if !run_command("configure", command, prefix)
       raise "fail configure #{version}"
     end
