@@ -1,123 +1,131 @@
-# all-ruby
+# rubylang/all-ruby
 
-This software is a script to install historic Ruby versions since ruby-0.49.
-Also, all-ruby script runs all ruby binaries with same arguments.
+Historic Ruby versions since ruby-0.49, all built and packaged into a single image. The bundled `all-ruby` script runs every Ruby binary with the same arguments so you can compare behavior across versions.
 
-## Platform
+* Docker Hub: https://hub.docker.com/r/rubylang/all-ruby
+* GitHub Container Registry: https://github.com/ruby/all-ruby/pkgs/container/all-ruby
+* Source: https://github.com/ruby/all-ruby
 
-This software is developed on Debian GNU/Linux 10 (buster) amd64.
+## Quick start
 
-However Ruby doesn't support 64 bit platform until ruby 1.8.0.
-So, the older ruby needs 32 bit development tools which can be
-installed as follows.
+Pull the latest image and list the bundled Ruby versions:
 
-    % sudo dpkg --add-architecture i386
-    % sudo apt update
-    % sudo apt-get build-dep ruby2.5
-    % sudo apt install rake gcc-multilib \
-        zlib1g:i386 libncurses5:i386 libgdbm6:i386 libssl1.1:i386 \
-        libreadline7:i386 libffi6:i386
+```
+docker pull rubylang/all-ruby:latest
+docker run --rm rubylang/all-ruby ./all-ruby -v
+```
 
-For Debian GNU/Linux 9 (stretch) :
+The `latest` tag contains every supported Ruby version in one image.
 
-    % sudo apt-get build-dep ruby2.3
-    % sudo apt install rake gcc-multilib \
-        zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.2:i386 \
-        libreadline7:i386 libffi6:i386
+## What is this?
+
+This image bundles historic Ruby releases starting from ruby-0.49 and provides an `all-ruby` script that invokes each `ruby` binary in turn with the same arguments. It is useful for checking when a feature was introduced, when behavior changed, or how a snippet runs across the entire Ruby history.
 
 ## Usage
 
-This software provides Rakefile and "rake all" downloads and builds
-historic ruby versions.
+Run the same script across every bundled Ruby:
 
-    % git clone https://github.com/akr/all-ruby.git
-    % cd all-ruby
-    % rake setup_build
-    % rake all  # this takes long time
+```
+% docker run --rm rubylang/all-ruby ./all-ruby -e 'p RUBY_VERSION'
+ruby-0.49             -e:1: syntax error
+                  exit 1
+ruby-0.50             -e:1: syntax error
+                  exit 1
+ruby-0.51             -e:1: undefined method `p' for "main"(Object)
+                  exit 1
+...
+ruby-1.3.4-990611     "1.3.4"
+...
+ruby-2.7.0-preview1   "2.7.0"
+```
 
-Note that `rake setup_build` is same as
-`mkdir ../build-all-ruby; ln -s ../build-all-ruby build`.
-build-all-ruby directory is required to avoid that
-`ruby -v` emits `last_commit=` line.
+Limit the range with `ALL_RUBY_SINCE`, or add your own Ruby into the comparison with `ALL_RUBY_ADDBINS`:
 
-all-ruby script runs all ruby binaries.
+```
+% docker run --rm -e 'ALL_RUBY_SINCE=ruby-2.0' \
+    rubylang/all-ruby ./all-ruby -e 'p 0.class'
+ruby-2.0.0-p0         Fixnum
+...
+ruby-2.3.8            Fixnum
+ruby-2.4.0-preview1   Integer
+...
+```
 
-    % ./all-ruby -e 'p RUBY_VERSION'
-    ruby-0.49             -e:1: syntax error
-		      exit 1
-    ruby-0.50             -e:1: syntax error
-		      exit 1
-    ruby-0.51             -e:1: undefined method `p' for "main"(Object)
-		      exit 1
-    ruby-0.54             -e:1:in method `p': undefined method `p' for "main"(Object)
-		      exit 1
-    ruby-0.55             -e:1: undefined method `p' for "main"(Object)
-		      exit 1
-    ...
-    ruby-0.65             -e:1: undefined method `p' for "main"(Object)
-		      exit 1
-    ruby-0.69             -e:1: Uninitialized constant RUBY_VERSION
-		      exit 1
-    ...
-    ruby-1.3.4-990531     /tmp/rbHMsENn:1: uninitialized constant RUBY_VERSION (NameError)
-		      exit 1
-    ruby-1.3.4-990611     "1.3.4"
-    ...
-    ruby-2.7.0-preview1   "2.7.0"
-    % ALL_RUBY_SINCE=ruby-1.6 all-ruby -e 'p 0.class'
-    ruby-1.6.0            Fixnum
-    ...
-    ruby-2.3.8            Fixnum
-    ruby-2.4.0-preview1   Integer
-    ...
-    ruby-2.7.0-preview1   Integer
+`./all-ruby` without arguments prints the supported environment variables:
 
-## Documentation
+```
+% ./all-ruby
+usage: all-ruby RUBY-ARGS
+environment variables:
+  ALL_RUBY_SINCE=ruby-1.4               run only versions since specified one
+  ALL_RUBY_BINS='ruby-2.4.4 ruby-2.5.1' run only versions specfied
+  ALL_RUBY_ADDBINS=./ruby               run specified commands additionaly
+  ALL_RUBY_SHOW_DUP=yes                 don't suppress duplicated output
+```
 
-rake without arguments shows the help message for the Rakefile.
+## Images
 
-    % rake
-    "rake all" will install 384 ruby
-    "rake list" shows versions
-    "rake sync" updates versions
+- **`rubylang/all-ruby:latest`** — every supported Ruby version in a single image. Also mirrored to `ghcr.io/ruby/all-ruby:latest`.
 
-all-ruby without arguments shows help message for all-ruby script.
+## Contributing
 
-    % ./all-ruby
-    usage: all-ruby RUBY-ARGS
-    environment variables:
-      ALL_RUBY_SINCE=ruby-1.4               run only versions since specified one
-      ALL_RUBY_BINS='ruby-2.4.4 ruby-2.5.1' run only versions specfied
-      ALL_RUBY_ADDBINS=./ruby               run specified commands additionaly
-      ALL_RUBY_SHOW_DUP=yes                 don't suppress duplicated output
+The Dockerfile and build scripts live in the [ruby/all-ruby](https://github.com/ruby/all-ruby) repository.
 
-## Docker
+### Building Ruby binaries locally
 
-Dockerfile is provided to generate a docker image containing
-ruby binaries built by the Rakefile.
+The Rakefile downloads and builds the historic Ruby versions:
 
-Pre-built docker image can be used as follows:
+```
+% git clone https://github.com/ruby/all-ruby.git
+% cd all-ruby
+% rake setup_build
+% rake all  # this takes long time
+```
 
-    % docker pull rubylang/all-ruby
-    % docker run --rm rubylang/all-ruby ./all-ruby -v
-    % docker run --rm -e 'ALL_RUBY_SINCE=ruby-2.0' \
-        -e 'ALL_RUBY_ADDBINS=/usr/bin/ruby' \
-        rubylang/all-ruby ./all-ruby -e 'p 0.class'
+`rake setup_build` is equivalent to `mkdir ../build-all-ruby; ln -s ../build-all-ruby build`. The `build-all-ruby` directory is required to prevent `ruby -v` from emitting a `last_commit=` line.
 
-If you want to build a docker image yourself,
-you can use following command.
-This uses your CPUs parallel.
+`rake` without arguments prints the available tasks:
 
-    % docker build ./ -t my-all-ruby
+```
+% rake
+"rake all" will install 384 ruby
+"rake list" shows versions
+"rake sync" updates versions
+```
 
-If you want to use only n CPUs, build argument j=n can be used.
-(--cpuset-cpus option of "docker build" is also usable.)
+### Platform requirements
 
-    % docker build ./ --build-arg j=1 -t my-all-ruby
+The build is developed on Debian GNU/Linux 10 (buster) amd64. Ruby did not support 64-bit platforms until ruby 1.8.0, so older Rubies require 32-bit development tools:
 
-## Links
+```
+% sudo dpkg --add-architecture i386
+% sudo apt update
+% sudo apt-get build-dep ruby2.5
+% sudo apt install rake gcc-multilib \
+    zlib1g:i386 libncurses5:i386 libgdbm6:i386 libssl1.1:i386 \
+    libreadline7:i386 libffi6:i386
+```
 
-- https://github.com/akr/all-ruby
+For Debian GNU/Linux 9 (stretch):
+
+```
+% sudo apt-get build-dep ruby2.3
+% sudo apt install rake gcc-multilib \
+    zlib1g:i386 libncurses5:i386 libgdbm3:i386 libssl1.0.2:i386 \
+    libreadline7:i386 libffi6:i386
+```
+
+### Building the Docker image locally
+
+```
+% docker build ./ -t my-all-ruby
+```
+
+The build uses all available CPUs in parallel. Restrict it with the `j` build argument (or `--cpuset-cpus`):
+
+```
+% docker build ./ --build-arg j=1 -t my-all-ruby
+```
 
 ## Author
 
