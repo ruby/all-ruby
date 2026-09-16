@@ -59,11 +59,14 @@ RUN find /build-all-ruby -type f \( -name ruby -o -name '*.so' \) -exec sh -c 'f
 # =============================================================================
 FROM debian:bullseye-slim AS builder-bullseye
 ENV DEBIAN_FRONTEND=noninteractive
-ARG mirror
 
-RUN echo "deb-src ${mirror} bullseye main" > /etc/apt/sources.list.d/deb-src.list \
+# bullseye is past EOL: deb.debian.org dropped it and archive.debian.org carries
+# no bullseye-security, so build against the snapshot the base image records.
+RUN sed -i -e '/^deb /d' -e 's/^# deb /deb /' /etc/apt/sources.list \
+  && sed -e 's/^deb /deb-src /' /etc/apt/sources.list > /etc/apt/sources.list.d/deb-src.list \
   && echo 'Dpkg::Use-Pty "0";\nquiet "2";\nAPT::Install-Recommends "0";' > /etc/apt/apt.conf.d/99autopilot \
   && echo 'Acquire::HTTP::No-Cache "True";' > /etc/apt/apt.conf.d/99no-cache \
+  && echo 'Acquire::Check-Valid-Until "false";\nAcquire::Retries "5";' > /etc/apt/apt.conf.d/99snapshot \
   && apt-get update \
   && apt-get install \
       build-essential \
